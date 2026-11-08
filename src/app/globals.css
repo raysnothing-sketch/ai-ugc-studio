@@ -3,12 +3,14 @@
 @tailwind utilities;
 
 :root {
-  --background: #0c0d0f;
+  --background: #07080a;
   --foreground: #f5f5f3;
-  --card: #14161a;
-  --card-border: #232730;
+  --card: #0e1014;
+  --card-secondary: #13161c;
+  --card-border: #1c2028;
   --gold: #d4af37;
-  --gold-hover: #b89528;
+  --gold-light: #fff2c6;
+  --gold-hover: #b88f28;
 }
 
 body {
@@ -18,48 +20,70 @@ body {
   overflow-x: hidden;
 }
 
-/* Custom modern scrollbar */
+/* Custom modern luxury scrollbar */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #0c0d0f;
+  background: #07080a;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #232730;
+  background: #1c2028;
   border-radius: 9999px;
+  border: 1px solid rgba(212, 175, 55, 0.1);
 }
 
 ::-webkit-scrollbar-thumb:hover {
   background: #d4af37;
 }
 
-/* Glass & Card effects */
+/* Glass & Card luxury effects */
 .glass-panel {
-  background: rgba(20, 22, 26, 0.75);
-  backdrop-filter: blur(12px);
-  border: 1px solid #232730;
+  background: rgba(14, 16, 20, 0.85);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(212, 175, 55, 0.18);
 }
 
 .gold-glow {
-  box-shadow: 0 0 25px -4px rgba(212, 175, 55, 0.25);
+  box-shadow: 0 0 25px -4px rgba(212, 175, 55, 0.3);
 }
 
 .gold-glow-lg {
-  box-shadow: 0 0 45px -5px rgba(212, 175, 55, 0.35);
+  box-shadow: 0 0 50px -6px rgba(212, 175, 55, 0.45);
 }
 
 .text-gold-gradient {
-  background: linear-gradient(135deg, #f5d77f 0%, #d4af37 50%, #aa821e 100%);
+  background: linear-gradient(135deg, #fff2c6 0%, #e5b869 35%, #d4af37 65%, #aa7c11 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.text-gold-shimmer {
+  background: linear-gradient(90deg, #d4af37 0%, #fff2c6 50%, #d4af37 100%);
+  background-size: 200% auto;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
 .gold-border-gradient {
-  border-image: linear-gradient(to right, #d4af37, #f3d179, #8e6e18) 1;
+  border-image: linear-gradient(to right, #d4af37, #fff2c6, #946f1e) 1;
+}
+
+.gold-pill {
+  background: rgba(212, 175, 55, 0.08);
+  border: 1px solid rgba(212, 175, 55, 0.3);
+  color: #f5df9f;
+  transition: all 0.2s ease-in-out;
+}
+
+.gold-pill:hover {
+  background: rgba(212, 175, 55, 0.18);
+  border-color: rgba(212, 175, 55, 0.6);
+  color: #fff;
+  box-shadow: 0 0 15px rgba(212, 175, 55, 0.25);
 }
 
 /* Video aspect ratio container utilities */

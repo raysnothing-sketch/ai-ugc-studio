@@ -72,22 +72,22 @@ export const Header: React.FC<HeaderProps> = ({ onToggleMobileMenu, onOpenNewPro
   const pendingTasksCount = tasks.filter(t => t.status !== 'done').length;
 
   return (
-    <header className="sticky top-0 z-30 flex items-center justify-between h-16 px-4 lg:px-8 bg-[#0c0d0f]/90 backdrop-blur-md border-b border-[#22262e]">
+    <header className="sticky top-0 z-30 flex items-center justify-between h-16 px-4 lg:px-8 bg-[#07080a]/90 backdrop-blur-md border-b border-[#1a1e26]">
       <div className="flex items-center gap-3">
         <button
           onClick={onToggleMobileMenu}
-          className="p-2 text-[#8e94a0] hover:text-[#f5f5f3] hover:bg-[#14161a] rounded-lg lg:hidden transition-colors"
+          className="p-2 text-[#8e94a0] hover:text-[#f5f5f3] hover:bg-[#12141a] rounded-lg lg:hidden transition-colors"
           aria-label="Open menu"
         >
           <Menu className="w-5 h-5" />
         </button>
 
         {/* Status indicator */}
-        <div className="hidden sm:flex items-center gap-2 px-2.5 py-1 rounded-full bg-[#14161a] border border-[#232730] text-[11px] text-[#8e94a0]">
-          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+        <div className="hidden sm:flex items-center gap-2 px-3 py-1 rounded-full bg-[#0e1014] border border-[#1e232d] text-[11px] text-[#8e94a0] shadow-sm">
+          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_8px_rgba(52,211,153,0.6)]" />
           <span className="text-[#f5f5f3] font-medium">{t.header.systemOnline}</span>
-          <span className="text-[#656a76]">|</span>
-          <span className="text-gold-400 font-medium">Turso DB & R2 Connected</span>
+          <span className="text-[#3b4252]">|</span>
+          <span className="text-gold-400 font-semibold tracking-wide">Studio Engine & R2 Online</span>
         </div>
       </div>
 
@@ -95,9 +95,9 @@ export const Header: React.FC<HeaderProps> = ({ onToggleMobileMenu, onOpenNewPro
         {/* Product-to-Ad quick launcher */}
         <button
           onClick={() => setIsProductToAdModalOpen(true)}
-          className="hidden md:flex items-center gap-2 px-3 py-1.5 text-xs font-medium rounded-lg bg-[#191c22] border border-[#d4af37]/40 text-[#f5f5f3] hover:bg-[#20242c] hover:border-[#d4af37] transition-all group"
+          className="hidden md:flex items-center gap-2 px-3 py-1.5 text-xs font-semibold rounded-lg bg-[#111318] border border-[#d4af37]/35 text-[#f5f5f3] hover:bg-[#181b22] hover:border-[#d4af37]/70 transition-all group shadow-[0_0_12px_rgba(212,175,55,0.1)]"
         >
-          <Sparkles className="w-3.5 h-3.5 text-[#d4af37] group-hover:rotate-12 transition-transform" />
+          <Sparkles className="w-3.5 h-3.5 text-gold-400 group-hover:rotate-12 transition-transform" />
           <span>Product-to-Ad Wizard</span>
         </button>
 
@@ -105,12 +105,12 @@ export const Header: React.FC<HeaderProps> = ({ onToggleMobileMenu, onOpenNewPro
         <div className="relative">
           <button
             onClick={() => setActiveModule('overview')}
-            className="p-2 text-[#8e94a0] hover:text-[#f5f5f3] hover:bg-[#14161a] rounded-lg relative transition-colors"
+            className="p-2 text-[#8e94a0] hover:text-[#f5f5f3] hover:bg-[#12141a] rounded-lg relative transition-colors"
             title={`${pendingTasksCount} tâches en attente`}
           >
             <Bell className="w-4 h-4" />
             {pendingTasksCount > 0 && (
-              <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-[#d4af37] ring-2 ring-[#0c0d0f]" />
+              <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-[#d4af37] ring-2 ring-[#07080a] shadow-[0_0_6px_rgba(212,175,55,0.8)]" />
             )}
           </button>
         </div>
@@ -118,7 +118,7 @@ export const Header: React.FC<HeaderProps> = ({ onToggleMobileMenu, onOpenNewPro
         {/* Primary Action Button */}
         <button
           onClick={btnConfig.action}
-          className="flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-semibold rounded-lg bg-gradient-to-r from-[#d4af37] to-[#b89528] text-[#0c0d0f] hover:from-[#e5c05d] hover:to-[#c59b27] shadow-[0_0_15px_rgba(212,175,55,0.25)] transition-all hover:scale-[1.02] active:scale-[0.98]"
+          className="flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-bold rounded-lg bg-gradient-to-r from-[#e5b869] via-[#d4af37] to-[#aa7c11] text-[#07080a] hover:from-[#f0c776] hover:to-[#bd8a16] shadow-[0_0_18px_rgba(212,175,55,0.35)] transition-all hover:scale-[1.02] active:scale-[0.98]"
         >
           <span>{btnConfig.label}</span>
         </button>

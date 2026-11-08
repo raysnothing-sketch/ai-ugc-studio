@@ -57,20 +57,24 @@ export const Sidebar: React.FC<SidebarProps> = ({ onOpenNewProject, isMobileOpen
       )}
 
       <aside
-        className={`fixed top-0 bottom-0 left-0 z-50 flex flex-col w-64 bg-[#0e1013] border-r border-[#22262e] transition-transform duration-300 ease-in-out lg:translate-x-0 ${
+        className={`fixed top-0 bottom-0 left-0 z-50 flex flex-col w-64 bg-[#090b0e] border-r border-[#1a1e26] transition-transform duration-300 ease-in-out lg:translate-x-0 ${
           isMobileOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
-        {/* Brand Header */}
-        <div className="flex items-center gap-3 px-5 py-5 border-b border-[#22262e]">
-          <div className="flex items-center justify-center w-8 h-8 rounded-full bg-gradient-to-br from-[#f5d77f] via-[#d4af37] to-[#927320] text-[#0c0d0f] font-bold text-sm shadow-[0_0_12px_rgba(212,175,55,0.4)]">
-            A
+        {/* Brand Header with Official Metallic App Icon */}
+        <div className="flex items-center gap-3 px-4 py-4 border-b border-[#1a1e26]">
+          <div className="relative w-9 h-9 rounded-xl overflow-hidden p-[1.5px] bg-gradient-to-br from-[#fff2c6] via-[#d4af37] to-[#805a10] shadow-[0_0_16px_rgba(212,175,55,0.35)] shrink-0">
+            <img
+              src="/icon.jpg"
+              alt="AI UGC Studio"
+              className="w-full h-full object-cover rounded-[9.5px]"
+            />
           </div>
-          <div>
-            <h1 className="font-semibold text-sm tracking-wide text-[#f5f5f3] flex items-center gap-1.5 truncate">
+          <div className="min-w-0">
+            <h1 className="font-bold text-sm tracking-wide text-[#f5f5f3] flex items-center gap-1.5 truncate">
               {userProfile.studioName}
             </h1>
-            <span className="text-[10px] text-[#8e94a0] uppercase tracking-wider font-medium">
+            <span className="text-[10px] text-gold-400 font-semibold uppercase tracking-wider block">
               Personal Edition
             </span>
           </div>
@@ -85,7 +89,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ onOpenNewProject, isMobileOpen
               placeholder={t.searchPlaceholder}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-9 pr-3 py-1.5 text-xs bg-[#14161a] border border-[#232730] rounded-lg text-[#f5f5f3] placeholder-[#656a76] focus:outline-none focus:border-[#d4af37] focus:ring-1 focus:ring-[#d4af37]/50 transition-all"
+              className="w-full pl-9 pr-3 py-1.5 text-xs bg-[#0f1116] border border-[#1e232d] rounded-lg text-[#f5f5f3] placeholder-[#656a76] focus:outline-none focus:border-[#d4af37] focus:ring-1 focus:ring-[#d4af37]/40 transition-all"
             />
           </div>
         </div>
@@ -104,8 +108,8 @@ export const Sidebar: React.FC<SidebarProps> = ({ onOpenNewProject, isMobileOpen
                 }}
                 className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-xs font-medium transition-all group ${
                   isActive
-                    ? 'bg-[#1b1e25] text-[#f5f5f3] shadow-sm border-l-2 border-[#d4af37]'
-                    : 'text-[#8e94a0] hover:text-[#f5f5f3] hover:bg-[#14161a]'
+                    ? 'bg-gradient-to-r from-[#d4af37]/15 to-transparent text-[#ffffff] shadow-sm border-l-2 border-[#d4af37] shadow-[inset_0_0_12px_rgba(212,175,55,0.06)]'
+                    : 'text-[#8e94a0] hover:text-[#f5f5f3] hover:bg-[#12141a]'
                 }`}
               >
                 <Icon
@@ -128,19 +132,19 @@ export const Sidebar: React.FC<SidebarProps> = ({ onOpenNewProject, isMobileOpen
         </nav>
 
         {/* Quick Language Toggle & Action */}
-        <div className="px-4 py-2 border-t border-[#22262e] bg-[#0c0d0f]/50">
+        <div className="px-4 py-2 border-t border-[#1a1e26] bg-[#07080a]/60">
           <div className="flex items-center justify-between text-xs text-[#8e94a0] mb-2">
             <span className="flex items-center gap-1.5 text-[11px]">
               <Globe className="w-3.5 h-3.5 text-[#d4af37]" /> Langue :
             </span>
-            <div className="flex items-center gap-1 bg-[#14161a] p-0.5 rounded-md border border-[#232730]">
+            <div className="flex items-center gap-1 bg-[#0f1116] p-0.5 rounded-md border border-[#1e232d]">
               {(['de', 'fr', 'en'] as const).map((lang) => (
                 <button
                   key={lang}
                   onClick={() => setLanguage(lang)}
                   className={`px-1.5 py-0.5 text-[10px] font-bold rounded uppercase transition-colors ${
                     language === lang
-                      ? 'bg-[#d4af37] text-[#0c0d0f]'
+                      ? 'bg-gradient-to-r from-[#e5b869] to-[#d4af37] text-[#07080a]'
                       : 'text-[#8e94a0] hover:text-[#f5f5f3]'
                   }`}
                 >
@@ -152,10 +156,10 @@ export const Sidebar: React.FC<SidebarProps> = ({ onOpenNewProject, isMobileOpen
         </div>
 
         {/* User Profile Card */}
-        <div className="p-3 border-t border-[#22262e] bg-[#111317]">
+        <div className="p-3 border-t border-[#1a1e26] bg-[#0c0e12]">
           <div
             onClick={() => setIsProfileModalOpen(true)}
-            className="flex items-center gap-3 p-1.5 rounded-lg hover:bg-[#181a20] transition-colors cursor-pointer group"
+            className="flex items-center gap-3 p-1.5 rounded-lg hover:bg-[#13161c] transition-colors cursor-pointer group"
             title="Personnaliser votre profil"
           >
             <div className="relative">
@@ -164,7 +168,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ onOpenNewProject, isMobileOpen
                 alt={userProfile.name}
                 className="w-8 h-8 rounded-full object-cover border border-[#d4af37]/50"
               />
-              <span className="absolute bottom-0 right-0 w-2 h-2 rounded-full bg-emerald-500 ring-2 ring-[#111317]" />
+              <span className="absolute bottom-0 right-0 w-2 h-2 rounded-full bg-emerald-500 ring-2 ring-[#0c0e12]" />
             </div>
             <div className="flex-1 min-w-0">
               <p className="text-xs font-semibold text-[#f5f5f3] truncate group-hover:text-[#d4af37] transition-colors">

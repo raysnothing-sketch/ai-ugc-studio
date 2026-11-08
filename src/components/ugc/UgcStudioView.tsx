@@ -126,13 +126,13 @@ export const UgcStudioView: React.FC = () => {
         <div className="flex items-center gap-2">
           <button
             onClick={() => setActiveStep(4)}
-            className="px-3.5 py-1.5 text-xs font-medium rounded-lg bg-[#14161a] border border-[#232730] text-[#f5f5f3] hover:border-[#d4af37]/40 transition-colors"
+            className="px-3.5 py-1.5 text-xs font-medium rounded-lg bg-[#0e1014] border border-[#1c2028] text-[#f5f5f3] hover:border-[#d4af37]/40 transition-colors"
           >
             {t.myCreations}
           </button>
           <button
             onClick={() => setIsProductToAdModalOpen(true)}
-            className="px-3.5 py-1.5 text-xs font-semibold rounded-lg bg-gradient-to-r from-[#d4af37] to-[#b89528] text-[#0c0d0f] hover:from-[#e5c05d] transition-all"
+            className="px-3.5 py-1.5 text-xs font-bold rounded-lg bg-gradient-to-r from-[#e5b869] via-[#d4af37] to-[#aa7c11] text-[#07080a] hover:from-[#f0c776] hover:to-[#bd8a16] shadow-[0_0_15px_rgba(212,175,55,0.3)] transition-all cursor-pointer"
           >
             {t.generateVideo}
           </button>
@@ -140,7 +140,7 @@ export const UgcStudioView: React.FC = () => {
       </div>
 
       {/* Stepper (Script -> Acteur -> Personnalisation -> Aperçu) */}
-      <div className="flex items-center justify-center gap-2 sm:gap-6 py-3 border-y border-[#22262e] text-xs">
+      <div className="flex items-center justify-center gap-2 sm:gap-6 py-3 border-y border-[#1a1e26] text-xs">
         {t.steps.map((stepName, idx) => {
           const stepNum = idx + 1;
           const isCurrent = activeStep === stepNum;
@@ -334,10 +334,10 @@ export const UgcStudioView: React.FC = () => {
 
         {/* Right Column: 9:16 Video Player Container (5 cols) */}
         <div className="lg:col-span-5 flex flex-col items-center">
-          {/* Smartphone Frame */}
-          <div className="relative w-full max-w-[290px] aspect-[9/16] bg-[#000] rounded-[32px] p-2.5 shadow-2xl border-4 border-[#232730] flex flex-col justify-between overflow-hidden">
+          {/* Smartphone Frame with Metallic Gold Bezel */}
+          <div className="relative w-full max-w-[290px] aspect-[9/16] bg-[#000] rounded-[32px] p-2.5 shadow-[0_0_40px_rgba(212,175,55,0.2)] border-4 border-[#d4af37]/35 flex flex-col justify-between overflow-hidden">
             {/* Screen Notch / Speaker bar */}
-            <div className="absolute top-3 left-1/2 -translate-x-1/2 w-20 h-4 bg-[#14161a] rounded-full z-20" />
+            <div className="absolute top-3 left-1/2 -translate-x-1/2 w-20 h-4 bg-[#0e1014] rounded-full z-20 border border-[#1c2028]" />
 
             {/* Remotion Player Canvas with Kinetic Subtitles & Controls */}
             <div className="relative w-full h-full rounded-[24px] overflow-hidden bg-black flex items-center justify-center">
@@ -358,9 +358,9 @@ export const UgcStudioView: React.FC = () => {
                       Synthèse vocale & Synchronisation labiale...
                     </p>
                   </div>
-                  <div className="w-full bg-[#232730] h-1.5 rounded-full overflow-hidden">
+                  <div className="w-full bg-[#1c2028] h-1.5 rounded-full overflow-hidden">
                     <div
-                      className="bg-gradient-to-r from-[#d4af37] to-[#e5c05d] h-full transition-all duration-300"
+                      className="bg-gradient-to-r from-[#e5b869] to-[#d4af37] h-full transition-all duration-300"
                       style={{ width: `${generationProgress}%` }}
                     />
                   </div>
@@ -377,7 +377,7 @@ export const UgcStudioView: React.FC = () => {
             <button
               onClick={handleGenerateVideo}
               disabled={isGenerating}
-              className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-gradient-to-r from-[#d4af37] to-[#b89528] text-[#0c0d0f] font-bold text-xs shadow-[0_0_20px_rgba(212,175,55,0.3)] hover:from-[#e5c05d] transition-all transform hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50"
+              className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-gradient-to-r from-[#e5b869] via-[#d4af37] to-[#aa7c11] text-[#07080a] font-extrabold text-xs shadow-[0_0_25px_rgba(212,175,55,0.35)] hover:from-[#f0c776] hover:to-[#bd8a16] transition-all transform hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 cursor-pointer"
             >
               <span>{t.generateVideoBtn}</span>
               <ChevronRight className="w-4 h-4" />
