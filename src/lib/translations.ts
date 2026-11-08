@@ -1,0 +1,331 @@
+import { Language } from './types';
+
+export const TRANSLATIONS = {
+  fr: {
+    sidebar: {
+      overview: 'Overview',
+      marketing: 'Marketing Intelligence',
+      clients: 'Clients',
+      projects: 'Projects',
+      ugcStudio: 'UGC Studio',
+      cinematicStudio: 'Cinematic Studio',
+      creativeStudio: 'Creative Studio',
+      socialMedia: 'Social Media',
+      businessManager: 'Business Manager',
+      portfolio: 'Portfolio',
+      mediaLibrary: 'Media Library',
+      settings: 'Settings',
+      searchPlaceholder: 'Rechercher un projet, client...',
+      ownerTitle: 'Propriétaire'
+    },
+    header: {
+      newProject: '+ Nouveau projet',
+      notifications: 'Notifications',
+      systemOnline: 'Studio Prêt'
+    },
+    overview: {
+      welcome: 'Bienvenue, Sarah ! 👋',
+      subtitle: 'Votre studio créatif IA, prêt à créer quelque chose d\'incroyable.',
+      activeClients: 'Clients actifs',
+      ongoingProjects: 'Projets en cours',
+      campaignsCreated: 'Campagnes créées',
+      revenueMonth: 'Revenus ce mois',
+      productToAdTitle: 'Product-to-Ad',
+      productToAdDesc: 'Transformez un simple produit en campagne publicitaire complète.',
+      launchWorkflow: 'Lancer le workflow →',
+      recentProjects: 'Projets récents',
+      viewAll: 'Voir tout →',
+      priorityTasks: 'Tâches prioritaires',
+      recentActivity: 'Activité récente',
+      today: 'Aujourd\'hui',
+      tomorrow: 'Demain'
+    },
+    marketing: {
+      title: 'Marketing Intelligence',
+      subtitle: 'Analysez un produit et obtenez une stratégie marketing complète.',
+      newAnalysis: '+ Nouvelle analyse',
+      tabProductUrl: 'URL de produit',
+      tabDescription: 'Description',
+      tabImage: 'Image',
+      tabDocument: 'Document',
+      inputPlaceholder: 'https://votre-boutique.com/produit-a-analyser',
+      analyzeButton: 'Analyser le produit →',
+      productAnalysis: 'Analyse du produit',
+      keyStrengths: 'Points forts',
+      marketingStrategy: 'Stratégie marketing',
+      keyRecommendations: 'Recommandations clés',
+      mainAngle: 'Angle principal',
+      audience: 'Audience',
+      formats: 'Formats',
+      cta: 'CTA',
+      viewMore: 'Voir plus →'
+    },
+    ugc: {
+      title: 'AI UGC Studio',
+      subtitle: 'Créez des vidéos UGC percutantes avec l\'IA.',
+      myCreations: 'Mes créations',
+      generateVideo: 'Générer une vidéo +',
+      steps: ['Script', 'Acteur', 'Personnalisation', 'Aperçu'],
+      videoType: 'Type de vidéo',
+      yourScript: 'Votre script',
+      voiceTone: 'Ton de voix',
+      generateVideoBtn: 'Générer la vidéo →'
+    },
+    cinematic: {
+      title: 'Cinematic Video Studio',
+      subtitle: 'Créez des vidéos cinématiques avec une direction artistique.',
+      newProject: '+ Nouveau projet',
+      steps: ['Concept', 'Préproduction', 'Génération', 'Montage'],
+      descriptionLabel: 'Description de votre vidéo',
+      visualStyleLabel: 'Style visuel',
+      targetDurationLabel: 'Durée cible',
+      generateStoryboard: 'Générer le storyboard →',
+      storyboard: 'Storyboard'
+    },
+    business: {
+      title: 'Gestion Freelance',
+      subtitle: 'Gérez votre activité indépendante en toute simplicité.',
+      newQuote: '+ Nouveau devis',
+      newInvoice: '+ Nouvelle facture',
+      tabs: {
+        quotes: 'Devis',
+        invoices: 'Factures',
+        payments: 'Paiements',
+        services: 'Prestations'
+      },
+      revenueThisMonth: 'Chiffre d\'affaires ce mois',
+      recentDocs: 'Derniers documents',
+      nextDeadline: 'Prochaine échéance',
+      viewDetails: 'Voir détails →',
+      gobdNotice: 'Notice GoBD & Fiscalité : Ce module propose une gestion commerciale agile. Pour la déclaration fiscale officielle en Allemagne (USt-VA) ou en France, exportez vos justificatifs conformes.'
+    },
+    portfolio: {
+      title: 'Portfolio & Livraison',
+      subtitle: 'Présentez vos réalisations et partagez-les facilement.',
+      addCase: '+ Ajouter une réalisation',
+      publicPortfolio: 'Portfolio public',
+      deliveryLinks: 'Liens de livraison',
+      shareLink: 'Lien de partage',
+      customizeLink: 'Personnaliser le lien',
+      activeNotice: '🟢 Lien actif • Expire dans 30 jours'
+    }
+  },
+  de: {
+    sidebar: {
+      overview: 'Übersicht',
+      marketing: 'Marketing Intelligence',
+      clients: 'Kunden',
+      projects: 'Projekte',
+      ugcStudio: 'UGC Studio',
+      cinematicStudio: 'Cinematic Studio',
+      creativeStudio: 'Creative Studio',
+      socialMedia: 'Social Media',
+      businessManager: 'Business Manager',
+      portfolio: 'Portfolio',
+      mediaLibrary: 'Mediathek',
+      settings: 'Einstellungen',
+      searchPlaceholder: 'Projekt, Kunde suchen...',
+      ownerTitle: 'Inhaberin'
+    },
+    header: {
+      newProject: '+ Neues Projekt',
+      notifications: 'Benachrichtigungen',
+      systemOnline: 'Studio Bereit'
+    },
+    overview: {
+      welcome: 'Willkommen, Sarah ! 👋',
+      subtitle: 'Dein persönliches KI-Kreativstudio für professionelle Marketingkampagnen.',
+      activeClients: 'Aktive Kunden',
+      ongoingProjects: 'Laufende Projekte',
+      campaignsCreated: 'Erstellte Kampagnen',
+      revenueMonth: 'Umsatz diesen Monat',
+      productToAdTitle: 'Product-to-Ad',
+      productToAdDesc: 'Verwandle ein einfaches Produkt in eine vollständige Werbekampagne.',
+      launchWorkflow: 'Workflow starten →',
+      recentProjects: 'Aktuelle Projekte',
+      viewAll: 'Alle ansehen →',
+      priorityTasks: 'Prioritäre Aufgaben',
+      recentActivity: 'Letzte Aktivitäten',
+      today: 'Heute',
+      tomorrow: 'Morgen'
+    },
+    marketing: {
+      title: 'Marketing Intelligence',
+      subtitle: 'Analysiere ein Produkt und erhalte eine vollständige Marketingstrategie.',
+      newAnalysis: '+ Neue Analyse',
+      tabProductUrl: 'Produkt-URL',
+      tabDescription: 'Beschreibung',
+      tabImage: 'Bild',
+      tabDocument: 'Dokument',
+      inputPlaceholder: 'https://ihr-shop.de/produkt-analysieren',
+      analyzeButton: 'Produkt analysieren →',
+      productAnalysis: 'Produktanalyse',
+      keyStrengths: 'Stärken',
+      marketingStrategy: 'Marketingstrategie',
+      keyRecommendations: 'Wichtige Empfehlungen',
+      mainAngle: 'Hauptwinkel',
+      audience: 'Zielgruppe',
+      formats: 'Formate',
+      cta: 'Call-to-Action',
+      viewMore: 'Mehr anzeigen →'
+    },
+    ugc: {
+      title: 'AI UGC Studio',
+      subtitle: 'Erstelle überzeugende UGC-Videos mit KI.',
+      myCreations: 'Meine Kreationen',
+      generateVideo: 'Video generieren +',
+      steps: ['Skript', 'Darsteller', 'Anpassung', 'Vorschau'],
+      videoType: 'Video-Typ',
+      yourScript: 'Dein Skript',
+      voiceTone: 'Tonfall',
+      generateVideoBtn: 'Video generieren →'
+    },
+    cinematic: {
+      title: 'Cinematic Video Studio',
+      subtitle: 'Erstelle filmische Werbespots mit künstlerischer Regie.',
+      newProject: '+ Neues Projekt',
+      steps: ['Konzept', 'Vorproduktion', 'Generierung', 'Schnitt'],
+      descriptionLabel: 'Videobeschreibung',
+      visualStyleLabel: 'Visueller Stil',
+      targetDurationLabel: 'Zieldauer',
+      generateStoryboard: 'Storyboard generieren →',
+      storyboard: 'Storyboard'
+    },
+    business: {
+      title: 'Freelance Business Manager',
+      subtitle: 'Verwalte deine Selbstständigkeit einfach und professionell.',
+      newQuote: '+ Neues Angebot',
+      newInvoice: '+ Neue Rechnung',
+      tabs: {
+        quotes: 'Angebote',
+        invoices: 'Rechnungen',
+        payments: 'Zahlungen',
+        services: 'Leistungen'
+      },
+      revenueThisMonth: 'Monatsumsatz',
+      recentDocs: 'Neueste Dokumente',
+      nextDeadline: 'Nächste Fälligkeit',
+      viewDetails: 'Details ansehen →',
+      gobdNotice: 'GoBD-Hinweis: Rechnungsnummern, USt-IdNr. und Pflichtangaben nach § 14 UStG werden automatisch geprüft.'
+    },
+    portfolio: {
+      title: 'Portfolio & Lieferung',
+      subtitle: 'Präsentiere Referenzen und teile Arbeitsergebnisse mit Kunden.',
+      addCase: '+ Case hinzufügen',
+      publicPortfolio: 'Öffentliches Portfolio',
+      deliveryLinks: 'Liefer-Links',
+      shareLink: 'Freigabe-Link',
+      customizeLink: 'Link anpassen',
+      activeNotice: '🟢 Link aktiv • Gültig für 30 Tage'
+    }
+  },
+  en: {
+    sidebar: {
+      overview: 'Overview',
+      marketing: 'Marketing Intelligence',
+      clients: 'Clients',
+      projects: 'Projects',
+      ugcStudio: 'UGC Studio',
+      cinematicStudio: 'Cinematic Studio',
+      creativeStudio: 'Creative Studio',
+      socialMedia: 'Social Media',
+      businessManager: 'Business Manager',
+      portfolio: 'Portfolio',
+      mediaLibrary: 'Media Library',
+      settings: 'Settings',
+      searchPlaceholder: 'Search project, client...',
+      ownerTitle: 'Owner'
+    },
+    header: {
+      newProject: '+ New Project',
+      notifications: 'Notifications',
+      systemOnline: 'Studio Ready'
+    },
+    overview: {
+      welcome: 'Welcome, Sarah ! 👋',
+      subtitle: 'Your personal AI creative studio, ready to craft something amazing.',
+      activeClients: 'Active Clients',
+      ongoingProjects: 'Active Projects',
+      campaignsCreated: 'Campaigns Created',
+      revenueMonth: 'Revenue This Month',
+      productToAdTitle: 'Product-to-Ad',
+      productToAdDesc: 'Transform a single product into a complete advertising campaign.',
+      launchWorkflow: 'Launch Workflow →',
+      recentProjects: 'Recent Projects',
+      viewAll: 'View All →',
+      priorityTasks: 'Priority Tasks',
+      recentActivity: 'Recent Activity',
+      today: 'Today',
+      tomorrow: 'Tomorrow'
+    },
+    marketing: {
+      title: 'Marketing Intelligence',
+      subtitle: 'Analyze any product and generate a full actionable marketing strategy.',
+      newAnalysis: '+ New Analysis',
+      tabProductUrl: 'Product URL',
+      tabDescription: 'Description',
+      tabImage: 'Image',
+      tabDocument: 'Document',
+      inputPlaceholder: 'https://your-store.com/product-to-analyze',
+      analyzeButton: 'Analyze Product →',
+      productAnalysis: 'Product Analysis',
+      keyStrengths: 'Key Strengths',
+      marketingStrategy: 'Marketing Strategy',
+      keyRecommendations: 'Key Recommendations',
+      mainAngle: 'Main Angle',
+      audience: 'Audience',
+      formats: 'Formats',
+      cta: 'Call to Action',
+      viewMore: 'View More →'
+    },
+    ugc: {
+      title: 'AI UGC Studio',
+      subtitle: 'Create high-converting UGC videos powered by AI.',
+      myCreations: 'My Creations',
+      generateVideo: 'Generate Video +',
+      steps: ['Script', 'Actor', 'Customization', 'Preview'],
+      videoType: 'Video Type',
+      yourScript: 'Your Script',
+      voiceTone: 'Voice Tone',
+      generateVideoBtn: 'Generate Video →'
+    },
+    cinematic: {
+      title: 'Cinematic Video Studio',
+      subtitle: 'Craft cinematic commercials with artistic direction and scene flow.',
+      newProject: '+ New Project',
+      steps: ['Concept', 'Preproduction', 'Generation', 'Editing'],
+      descriptionLabel: 'Video Description',
+      visualStyleLabel: 'Visual Style',
+      targetDurationLabel: 'Target Duration',
+      generateStoryboard: 'Generate Storyboard →',
+      storyboard: 'Storyboard'
+    },
+    business: {
+      title: 'Freelance Business Manager',
+      subtitle: 'Effortlessly manage your freelance business from one place.',
+      newQuote: '+ New Quote',
+      newInvoice: '+ New Invoice',
+      tabs: {
+        quotes: 'Quotes',
+        invoices: 'Invoices',
+        payments: 'Payments',
+        services: 'Services'
+      },
+      revenueThisMonth: 'Revenue this month',
+      recentDocs: 'Recent Documents',
+      nextDeadline: 'Next Deadline',
+      viewDetails: 'View Details →',
+      gobdNotice: 'Legal & Tax Notice: Compliant with GoBD and European VAT regulations.'
+    },
+    portfolio: {
+      title: 'Portfolio & Delivery',
+      subtitle: 'Showcase your work and securely deliver files to clients.',
+      addCase: '+ Add Case Study',
+      publicPortfolio: 'Public Portfolio',
+      deliveryLinks: 'Delivery Links',
+      shareLink: 'Share Link',
+      customizeLink: 'Customize Link',
+      activeNotice: '🟢 Active link • Expires in 30 days'
+    }
+  }
+};
