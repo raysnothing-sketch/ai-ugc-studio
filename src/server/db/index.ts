@@ -39,6 +39,9 @@ interface StudioMemoryStore {
   ugcScripts: any[];
   mediaAssets: any[];
   studioSettings: any[];
+  generationJobs: any[];
+  providerUsage: any[];
+  activityLogs: any[];
 }
 
 const defaultStore: StudioMemoryStore = {
@@ -189,7 +192,10 @@ const defaultStore: StudioMemoryStore = {
   ],
   ugcScripts: [],
   mediaAssets: [],
-  studioSettings: []
+  studioSettings: [],
+  generationJobs: [],
+  providerUsage: [],
+  activityLogs: []
 };
 
 // Global memory persistence across serverless invocations
@@ -207,6 +213,9 @@ function getStoreKey(table: any): keyof StudioMemoryStore {
       case 'ugc_scripts': return 'ugcScripts';
       case 'media_assets': return 'mediaAssets';
       case 'studio_settings': return 'studioSettings';
+      case 'generation_jobs': return 'generationJobs';
+      case 'provider_usage': return 'providerUsage';
+      case 'activity_logs': return 'activityLogs';
       default: return 'tasks';
     }
   } catch {
@@ -425,6 +434,41 @@ export async function ensureDatabaseTables(): Promise<void> {
       CREATE TABLE IF NOT EXISTS studio_settings (
         key TEXT PRIMARY KEY,
         value_json TEXT NOT NULL
+      );
+
+      CREATE TABLE IF NOT EXISTS generation_jobs (
+        id TEXT PRIMARY KEY,
+        provider TEXT NOT NULL,
+        type TEXT NOT NULL,
+        status TEXT NOT NULL DEFAULT 'pending',
+        prompt TEXT NOT NULL,
+        input_params_json TEXT NOT NULL DEFAULT '{}',
+        output_url TEXT,
+        r2_key TEXT,
+        cost_eur REAL NOT NULL DEFAULT 0,
+        duration_sec INTEGER NOT NULL DEFAULT 0,
+        error_message TEXT,
+        created_at TEXT NOT NULL,
+        completed_at TEXT
+      );
+
+      CREATE TABLE IF NOT EXISTS provider_usage (
+        id TEXT PRIMARY KEY,
+        job_id TEXT REFERENCES generation_jobs(id),
+        provider TEXT NOT NULL,
+        units_count INTEGER NOT NULL DEFAULT 0,
+        unit_type TEXT NOT NULL DEFAULT 'characters',
+        cost_eur REAL NOT NULL DEFAULT 0,
+        recorded_at TEXT NOT NULL
+      );
+
+      CREATE TABLE IF NOT EXISTS activity_logs (
+        id TEXT PRIMARY KEY,
+        action TEXT NOT NULL,
+        entity_type TEXT NOT NULL,
+        entity_id TEXT,
+        details_json TEXT NOT NULL DEFAULT '{}',
+        created_at TEXT NOT NULL
       );
     `);
     isInitialized = true;

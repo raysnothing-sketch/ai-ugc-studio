@@ -1,10 +1,14 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { db, ensureDatabaseTables } from '@/server/db';
 import { clientsTable, projectsTable, tasksTable, invoicesTable } from '@/server/db/schema';
+import { verifyAuthOrReject } from '@/server/auth/studio-auth';
 
 export const dynamic = 'force-dynamic';
 
-export async function GET() {
+export async function GET(req: NextRequest) {
+  const authErr = verifyAuthOrReject(req);
+  if (authErr) return authErr;
+
   try {
     await ensureDatabaseTables();
 

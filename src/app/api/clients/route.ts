@@ -2,10 +2,14 @@ import { NextRequest, NextResponse } from 'next/server';
 import { db, ensureDatabaseTables } from '@/server/db';
 import { clientsTable } from '@/server/db/schema';
 import { eq } from 'drizzle-orm';
+import { verifyAuthOrReject } from '@/server/auth/studio-auth';
 
 export const dynamic = 'force-dynamic';
 
-export async function GET() {
+export async function GET(req: NextRequest) {
+  const authErr = verifyAuthOrReject(req);
+  if (authErr) return authErr;
+
   try {
     await ensureDatabaseTables();
     const clients = await db.select().from(clientsTable);
@@ -16,15 +20,22 @@ export async function GET() {
 }
 
 export async function POST(req: NextRequest) {
+  const authErr = verifyAuthOrReject(req);
+  if (authErr) return authErr;
+
   try {
     await ensureDatabaseTables();
     const body = await req.json();
 
+    if (!body.name || !body.email) {
+      return NextResponse.json({ error: 'Nom et e-mail requis' }, { status: 400 });
+    }
+
     const newClient = {
       id: body.id || `cli-${Date.now()}`,
-      name: body.name,
-      contactName: body.contactName || body.name,
-      email: body.email,
+      name: body.name.trim(),
+      contactName: (body.contactName || body.name).trim(),
+      email: body.email.trim(),
       phone: body.phone || null,
       website: body.website || null,
       address: body.address || null,
@@ -45,6 +56,9 @@ export async function POST(req: NextRequest) {
 }
 
 export async function DELETE(req: NextRequest) {
+  const authErr = verifyAuthOrReject(req);
+  if (authErr) return authErr;
+
   try {
     await ensureDatabaseTables();
     const { searchParams } = new URL(req.url);

@@ -2,10 +2,14 @@ import { NextRequest, NextResponse } from 'next/server';
 import { db, ensureDatabaseTables } from '@/server/db';
 import { invoicesTable } from '@/server/db/schema';
 import { eq } from 'drizzle-orm';
+import { verifyAuthOrReject } from '@/server/auth/studio-auth';
 
 export const dynamic = 'force-dynamic';
 
-export async function GET() {
+export async function GET(req: NextRequest) {
+  const authErr = verifyAuthOrReject(req);
+  if (authErr) return authErr;
+
   try {
     await ensureDatabaseTables();
     const rows = await db.select().from(invoicesTable);
@@ -20,19 +24,26 @@ export async function GET() {
 }
 
 export async function POST(req: NextRequest) {
+  const authErr = verifyAuthOrReject(req);
+  if (authErr) return authErr;
+
   try {
     await ensureDatabaseTables();
     const body = await req.json();
 
+    if (!body.number || !body.clientName) {
+      return NextResponse.json({ error: 'Numéro et client requis' }, { status: 400 });
+    }
+
     const newInvoice = {
       id: body.id || `inv-${Date.now()}`,
-      number: body.number,
+      number: body.number.trim(),
       clientId: body.clientId || null,
-      clientName: body.clientName,
+      clientName: body.clientName.trim(),
       clientAddress: body.clientAddress || null,
       type: body.type || 'quote',
-      issueDate: body.issueDate,
-      dueDate: body.dueDate,
+      issueDate: body.issueDate || new Date().toISOString().split('T')[0],
+      dueDate: body.dueDate || new Date().toISOString().split('T')[0],
       itemsJson: JSON.stringify(body.items || []),
       subtotal: body.subtotal || 0,
       taxRate: body.taxRate || 20,
@@ -60,6 +71,9 @@ export async function POST(req: NextRequest) {
 }
 
 export async function DELETE(req: NextRequest) {
+  const authErr = verifyAuthOrReject(req);
+  if (authErr) return authErr;
+
   try {
     await ensureDatabaseTables();
     const { searchParams } = new URL(req.url);

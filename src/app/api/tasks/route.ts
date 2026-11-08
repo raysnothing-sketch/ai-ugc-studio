@@ -2,10 +2,14 @@ import { NextRequest, NextResponse } from 'next/server';
 import { db, ensureDatabaseTables } from '@/server/db';
 import { tasksTable } from '@/server/db/schema';
 import { eq } from 'drizzle-orm';
+import { verifyAuthOrReject } from '@/server/auth/studio-auth';
 
 export const dynamic = 'force-dynamic';
 
-export async function GET() {
+export async function GET(req: NextRequest) {
+  const authErr = verifyAuthOrReject(req);
+  if (authErr) return authErr;
+
   try {
     await ensureDatabaseTables();
     const tasks = await db.select().from(tasksTable);
@@ -16,13 +20,20 @@ export async function GET() {
 }
 
 export async function POST(req: NextRequest) {
+  const authErr = verifyAuthOrReject(req);
+  if (authErr) return authErr;
+
   try {
     await ensureDatabaseTables();
     const body = await req.json();
 
+    if (!body.title) {
+      return NextResponse.json({ error: 'Titre de la tâche requis' }, { status: 400 });
+    }
+
     const newTask = {
       id: body.id || `task-${Date.now()}`,
-      title: body.title,
+      title: body.title.trim(),
       projectId: body.projectId || null,
       deadline: body.deadline || "Aujourd'hui",
       status: body.status || 'todo',
@@ -38,6 +49,9 @@ export async function POST(req: NextRequest) {
 }
 
 export async function PATCH(req: NextRequest) {
+  const authErr = verifyAuthOrReject(req);
+  if (authErr) return authErr;
+
   try {
     await ensureDatabaseTables();
     const body = await req.json();
@@ -53,6 +67,9 @@ export async function PATCH(req: NextRequest) {
 }
 
 export async function DELETE(req: NextRequest) {
+  const authErr = verifyAuthOrReject(req);
+  if (authErr) return authErr;
+
   try {
     await ensureDatabaseTables();
     const { searchParams } = new URL(req.url);

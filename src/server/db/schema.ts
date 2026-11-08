@@ -103,3 +103,38 @@ export const studioSettingsTable = sqliteTable('studio_settings', {
   key: text('key').primaryKey(),
   valueJson: text('value_json').notNull()
 });
+
+export const generationJobsTable = sqliteTable('generation_jobs', {
+  id: text('id').primaryKey(),
+  provider: text('provider').notNull(), // 'ElevenLabs' | 'HeyGen' | 'OpenAI' | 'Runway' | 'MuseTalk'
+  type: text('type').notNull(), // 'voice' | 'video' | 'image' | 'lipsync'
+  status: text('status').notNull().default('pending'), // 'pending' | 'processing' | 'completed' | 'failed'
+  prompt: text('prompt').notNull(),
+  inputParamsJson: text('input_params_json').notNull().default('{}'),
+  outputUrl: text('output_url'),
+  r2Key: text('r2_key'),
+  costEur: real('cost_eur').notNull().default(0),
+  durationSec: integer('duration_sec').notNull().default(0),
+  errorMessage: text('error_message'),
+  createdAt: text('created_at').notNull(),
+  completedAt: text('completed_at')
+});
+
+export const providerUsageTable = sqliteTable('provider_usage', {
+  id: text('id').primaryKey(),
+  jobId: text('job_id').references(() => generationJobsTable.id),
+  provider: text('provider').notNull(),
+  unitsCount: integer('units_count').notNull().default(0),
+  unitType: text('unit_type').notNull().default('characters'), // 'characters' | 'seconds' | 'credits'
+  costEur: real('cost_eur').notNull().default(0),
+  recordedAt: text('recorded_at').notNull()
+});
+
+export const activityLogsTable = sqliteTable('activity_logs', {
+  id: text('id').primaryKey(),
+  action: text('action').notNull(), // 'create_client' | 'generate_voice' | 'generate_video' | 'issue_invoice'
+  entityType: text('entity_type').notNull(),
+  entityId: text('entity_id'),
+  detailsJson: text('details_json').notNull().default('{}'),
+  createdAt: text('created_at').notNull()
+});

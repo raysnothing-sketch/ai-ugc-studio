@@ -10,6 +10,9 @@ export interface VoiceGenerationResult {
   durationSec: number;
   provider: 'ElevenLabs' | 'OpenAI' | 'Kokoro';
   estimatedCostEur: number;
+  r2Key?: string;
+  isMock?: boolean;
+  notice?: string;
 }
 
 export interface VideoGenerateOptions {
@@ -17,6 +20,8 @@ export interface VideoGenerateOptions {
   durationSec?: number;
   resolution?: '720p' | '1080p' | '4k';
   referenceImageUrl?: string;
+  avatarId?: string;
+  voiceId?: string;
 }
 
 export interface VideoGenerationResult {
@@ -25,6 +30,9 @@ export interface VideoGenerationResult {
   status: 'pending' | 'processing' | 'completed' | 'failed';
   provider: 'HeyGen' | 'Runway' | 'Luma' | 'Replicate';
   estimatedCostEur: number;
+  r2Key?: string;
+  isMock?: boolean;
+  notice?: string;
 }
 
 export interface LipSyncOptions {
