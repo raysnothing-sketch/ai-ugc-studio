@@ -9,7 +9,7 @@ export async function GET() {
   try {
     await ensureDatabaseTables();
     const rows = await db.select().from(invoicesTable);
-    const invoices = rows.map(i => ({
+    const invoices = rows.map((i: any) => ({
       ...i,
       items: JSON.parse(i.itemsJson || '[]')
     }));

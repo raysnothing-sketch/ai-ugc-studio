@@ -16,13 +16,13 @@ export async function GET() {
     ]);
 
     // Parse JSON subfields safely
-    const formattedProjects = projects.map(p => ({
+    const formattedProjects = projects.map((p: any) => ({
       ...p,
       deliverables: JSON.parse(p.deliverablesJson || '[]'),
       tags: JSON.parse(p.tagsJson || '[]')
     }));
 
-    const formattedInvoices = invoices.map(i => ({
+    const formattedInvoices = invoices.map((i: any) => ({
       ...i,
       items: JSON.parse(i.itemsJson || '[]')
     }));

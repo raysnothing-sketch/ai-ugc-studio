@@ -9,7 +9,7 @@ export async function GET() {
   try {
     await ensureDatabaseTables();
     const rows = await db.select().from(projectsTable);
-    const projects = rows.map(p => ({
+    const projects = rows.map((p: any) => ({
       ...p,
       deliverables: JSON.parse(p.deliverablesJson || '[]'),
       tags: JSON.parse(p.tagsJson || '[]')
