@@ -5,18 +5,31 @@ import { useApp } from '@/lib/store';
 import { TRANSLATIONS } from '@/lib/translations';
 import {
   Film,
-  Sparkles,
   Camera,
   Play,
-  RotateCw,
   Clock,
   Layers,
   ChevronRight,
   Maximize2,
   Check,
-  Plus
+  Plus,
+  SlidersHorizontal,
+  Video,
+  Eye,
+  RefreshCw,
+  X
 } from 'lucide-react';
 import { StoryboardScene } from '@/lib/types';
+
+/**
+ * Cinematic Studio View — Unslopped & Director-Grade Edition
+ * 
+ * Design Principles:
+ * - World: Production monitor / Editing suite (Graphite & matte black, hairline borders, calm neutrals)
+ * - Signature: Real camera metadata HUD (Timecodes, focal lengths, 24fps)
+ * - Typography: Sentence case, tabular numbers, weights 400 & 500
+ * - Motion: Zero zoom scaling; intentional hairline and opacity transitions
+ */
 
 export const CinematicStudioView: React.FC = () => {
   const { language, cinematicProject, updateCinematicProject } = useApp();
@@ -28,25 +41,33 @@ export const CinematicStudioView: React.FC = () => {
   const [targetDuration, setTargetDuration] = useState(cinematicProject.targetDuration);
   const [isGeneratingStoryboard, setIsGeneratingStoryboard] = useState(false);
   const [selectedScene, setSelectedScene] = useState<StoryboardScene | null>(null);
+  const [isPlayingPreview, setIsPlayingPreview] = useState(false);
 
   const handleGenerateStoryboard = () => {
     setIsGeneratingStoryboard(true);
     setTimeout(() => {
       setIsGeneratingStoryboard(false);
       setActiveStep(2);
-    }, 1200);
+    }, 1000);
   };
+
+  const stepsList = [
+    { num: 1, label: 'Concept & Brief' },
+    { num: 2, label: 'Préproduction & Storyboard' },
+    { num: 3, label: 'Génération Rushes' },
+    { num: 4, label: 'Montage & Export 4K' }
+  ];
 
   return (
     <div className="space-y-6">
-      {/* Title & Actions */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      {/* Title & Actions Bar */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-[#1b1f27]">
         <div>
-          <h1 className="text-2xl font-bold text-[#f5f5f3] tracking-tight">
-            {t.title}
+          <h1 className="text-xl font-semibold text-[#f5f5f3] tracking-tight">
+            Cinematic Studio
           </h1>
-          <p className="text-xs text-[#8e94a0] mt-1">
-            {t.subtitle}
+          <p className="text-xs text-[#9ba1ad] mt-0.5">
+            Direction artistique et découpage technique de spots publicitaires de prestige
           </p>
         </div>
 
@@ -55,96 +76,101 @@ export const CinematicStudioView: React.FC = () => {
             setDescription('');
             setActiveStep(1);
           }}
-          className="inline-flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-semibold rounded-lg bg-gradient-to-r from-[#d4af37] to-[#b89528] text-[#0c0d0f] hover:from-[#e5c05d] transition-all"
+          className="inline-flex items-center gap-2 px-3.5 py-2 text-xs font-medium rounded-lg bg-[#14181f] text-[#d4af37] border border-[#d4af37]/30 hover:border-[#d4af37] hover:bg-[#191f28] transition-colors"
         >
-          <span>{t.newProject}</span>
+          <Plus className="w-3.5 h-3.5" />
+          <span>Nouveau projet</span>
         </button>
       </div>
 
-      {/* Stepper (Concept -> Préproduction -> Génération -> Montage) */}
-      <div className="flex items-center justify-center gap-2 sm:gap-6 py-3 border-y border-[#22262e] text-xs">
-        {t.steps.map((stepName, idx) => {
-          const stepNum = idx + 1;
-          const isCurrent = activeStep === stepNum;
-          const isDone = activeStep > stepNum;
+      {/* Director Stepper with Connected Progress Rail */}
+      <div className="relative flex items-center justify-between max-w-2xl mx-auto py-2">
+        <div className="absolute left-6 right-6 top-1/2 -translate-y-1/2 h-[1px] bg-[#1e232d] -z-0" />
+        {stepsList.map((step) => {
+          const isCurrent = activeStep === step.num;
+          const isDone = activeStep > step.num;
 
           return (
             <button
-              key={stepName}
-              onClick={() => setActiveStep(stepNum)}
-              className="flex items-center gap-2 group transition-colors"
+              key={step.num}
+              onClick={() => setActiveStep(step.num)}
+              className="relative z-10 flex flex-col items-center gap-1.5 group cursor-pointer"
             >
               <div
-                className={`w-6 h-6 rounded-full flex items-center justify-center text-[11px] font-bold transition-all ${
+                className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-mono font-medium transition-colors ${
                   isCurrent
-                    ? 'bg-[#d4af37] text-[#0c0d0f] ring-4 ring-[#d4af37]/20 shadow-gold'
+                    ? 'bg-[#d4af37] text-[#07080a] ring-2 ring-[#d4af37]/30'
                     : isDone
-                    ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40'
-                    : 'bg-[#191c22] text-[#8e94a0] border border-[#232730]'
+                    ? 'bg-[#18211b] text-emerald-400 border border-emerald-500/40'
+                    : 'bg-[#0f1217] text-[#646a78] border border-[#212630] group-hover:border-[#353c4c] group-hover:text-[#9ba1ad]'
                 }`}
               >
-                {isDone ? <Check className="w-3.5 h-3.5" /> : stepNum}
+                {isDone ? <Check className="w-3.5 h-3.5" /> : step.num}
               </div>
               <span
-                className={`font-medium hidden sm:inline ${
-                  isCurrent ? 'text-[#f5f5f3]' : 'text-[#8e94a0] group-hover:text-[#f5f5f3]'
+                className={`text-[11px] font-medium hidden sm:inline transition-colors ${
+                  isCurrent ? 'text-[#f5f5f3]' : 'text-[#646a78] group-hover:text-[#9ba1ad]'
                 }`}
               >
-                {stepName}
+                {step.label}
               </span>
-              {idx < t.steps.length - 1 && (
-                <span className="text-[#363c48] ml-2 hidden sm:inline">→</span>
-              )}
             </button>
           );
         })}
       </div>
 
-      {/* Main Layout: Form (Left) & Storyboard Cards (Right) */}
+      {/* Main Studio Workspace: Form (Left 4 cols) & Storyboard (Right 8 cols) */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-        {/* Left Form: Description & Settings (4 cols) */}
-        <div className="lg:col-span-4 bg-[#14161a] border border-[#232730] rounded-xl p-5 shadow-card space-y-4">
-          <div className="space-y-2">
-            <label className="text-xs font-semibold uppercase tracking-wider text-[#f5f5f3] block">
-              {t.descriptionLabel}
+        {/* Left Panel: Camera & Concept Configuration */}
+        <div className="lg:col-span-4 bg-[#0e1115] border border-[#1e232d] rounded-xl p-5 space-y-4">
+          <div className="flex items-center gap-2 pb-3 border-b border-[#1b1f27]">
+            <SlidersHorizontal className="w-4 h-4 text-[#d4af37]" />
+            <h2 className="text-xs font-semibold text-[#f5f5f3]">
+              Paramètres de réalisation
+            </h2>
+          </div>
+
+          <div className="space-y-1.5">
+            <label className="text-xs font-medium text-[#9ba1ad] block">
+              Description de la scène et intentions
             </label>
             <textarea
               rows={4}
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              className="w-full p-3.5 text-xs bg-[#0c0d0f] border border-[#232730] rounded-lg text-[#f5f5f3] leading-relaxed focus:outline-none focus:border-[#d4af37] transition-all resize-none font-sans"
-              placeholder="Décrivez l'ambiance, les plans et l'émotion..."
+              className="w-full p-3 text-xs bg-[#07080a] border border-[#212630] rounded-lg text-[#f5f5f3] leading-relaxed focus:outline-none focus:border-[#d4af37]/60 transition-colors resize-none placeholder:text-[#454c5a]"
+              placeholder="Décrivez l'ambiance, les mouvements de caméra et la composition des plans"
             />
           </div>
 
-          <div className="space-y-2">
-            <label className="text-xs font-semibold uppercase tracking-wider text-[#f5f5f3] block">
-              {t.visualStyleLabel}
+          <div className="space-y-1.5">
+            <label className="text-xs font-medium text-[#9ba1ad] block">
+              Style visuel & optiques
             </label>
             <select
               value={visualStyle}
               onChange={(e) => setVisualStyle(e.target.value)}
-              className="w-full px-3 py-2 text-xs bg-[#0c0d0f] border border-[#232730] rounded-lg text-[#f5f5f3] focus:outline-none focus:border-[#d4af37] transition-all cursor-pointer"
+              className="w-full h-10 px-3 text-xs bg-[#07080a] border border-[#212630] rounded-lg text-[#f5f5f3] focus:outline-none focus:border-[#d4af37]/60 transition-colors cursor-pointer"
             >
-              <option value="Cinématique">Cinématique Haute Couture</option>
-              <option value="Warm Grain">Pellicule 35mm Grain Chaud</option>
-              <option value="Moody Luxury">Luxe Épuré & Ombres Profondes</option>
-              <option value="Commercial High Speed">Ralenti Commercial 120fps</option>
+              <option value="Cinématique">Cinématique Haute Couture (Arri Alexa LF)</option>
+              <option value="Warm Grain">Pellicule 35mm grain chaud (Kodak Vision3)</option>
+              <option value="Moody Luxury">Luxe épuré & ombres profondes (Cooke S4/i)</option>
+              <option value="Commercial High Speed">Ralenti commercial 120fps (Phantom Flex)</option>
             </select>
           </div>
 
-          <div className="space-y-2">
-            <label className="text-xs font-semibold uppercase tracking-wider text-[#f5f5f3] block">
-              {t.targetDurationLabel}
+          <div className="space-y-1.5">
+            <label className="text-xs font-medium text-[#9ba1ad] block">
+              Format et durée cible
             </label>
             <select
               value={targetDuration}
               onChange={(e) => setTargetDuration(e.target.value)}
-              className="w-full px-3 py-2 text-xs bg-[#0c0d0f] border border-[#232730] rounded-lg text-[#f5f5f3] focus:outline-none focus:border-[#d4af37] transition-all cursor-pointer"
+              className="w-full h-10 px-3 text-xs bg-[#07080a] border border-[#212630] rounded-lg text-[#f5f5f3] focus:outline-none focus:border-[#d4af37]/60 transition-colors cursor-pointer"
             >
-              <option value="15-30 sec">15-30 sec (Idéal Réseaux & Teaser)</option>
-              <option value="30-60 sec">30-60 sec (Spot Marque / Site Web)</option>
-              <option value="60-90 sec">60-90 sec (Brand Movie Long)</option>
+              <option value="15-30 sec">15-30 secondes (Teaser réseaux sociaux)</option>
+              <option value="30-60 sec">30-60 secondes (Spot publicitaire principal)</option>
+              <option value="60-90 sec">60-90 secondes (Film de marque narratif)</option>
             </select>
           </div>
 
@@ -152,16 +178,16 @@ export const CinematicStudioView: React.FC = () => {
             <button
               onClick={handleGenerateStoryboard}
               disabled={isGeneratingStoryboard}
-              className="w-full flex items-center justify-center gap-2 py-2.5 rounded-lg bg-gradient-to-r from-[#d4af37] to-[#b89528] text-[#0c0d0f] font-bold text-xs shadow-[0_0_15px_rgba(212,175,55,0.25)] hover:from-[#e5c05d] transition-all disabled:opacity-50"
+              className="w-full h-10 flex items-center justify-center gap-2 rounded-lg bg-[#d4af37] text-[#07080a] font-medium text-xs hover:bg-[#e0bc45] transition-colors disabled:opacity-50 cursor-pointer"
             >
               {isGeneratingStoryboard ? (
                 <>
-                  <Sparkles className="w-3.5 h-3.5 animate-spin" />
-                  <span>Génération de la direction artistique...</span>
+                  <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                  <span>Calcul du découpage technique...</span>
                 </>
               ) : (
                 <>
-                  <span>{t.generateStoryboard}</span>
+                  <span>Générer le storyboard technique</span>
                   <ChevronRight className="w-3.5 h-3.5" />
                 </>
               )}
@@ -169,70 +195,87 @@ export const CinematicStudioView: React.FC = () => {
           </div>
         </div>
 
-        {/* Right Section: Storyboard Scene Cards (8 cols) */}
-        <div className="lg:col-span-8 space-y-3">
-          <div className="flex items-center justify-between">
-            <h3 className="text-xs font-semibold uppercase tracking-wider text-[#f5f5f3]">
-              {t.storyboard}
-            </h3>
-            <span className="text-[11px] text-[#8e94a0]">
-              4 scènes • 16 secondes au total
+        {/* Right Section: Storyboard Rushes (8 cols) */}
+        <div className="lg:col-span-8 space-y-4">
+          <div className="flex items-center justify-between pb-1">
+            <div className="flex items-center gap-2">
+              <Film className="w-4 h-4 text-[#d4af37]" />
+              <h2 className="text-xs font-semibold text-[#f5f5f3]">
+                Découpage storyboard
+              </h2>
+            </div>
+            <span className="font-mono text-[11px] text-[#646a78] tabular-nums">
+              4 plans • 00:00:16:00 au total
             </span>
           </div>
 
-          {/* 4 Scene Cards Grid (Exactly as seen in Mockup 4) */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-            {cinematicProject.scenes.map((scene) => (
+          {/* 4 Cinematic Scene Cards Grid (16:9 Widescreen Aspect) */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {cinematicProject.scenes.map((scene, idx) => (
               <div
                 key={scene.id}
                 onClick={() => setSelectedScene(scene)}
-                className="bg-[#14161a] border border-[#232730] hover:border-[#d4af37]/60 rounded-xl overflow-hidden transition-all group cursor-pointer shadow-card flex flex-col justify-between"
+                className="bg-[#0e1115] border border-[#1e232d] hover:border-[#384152] rounded-xl overflow-hidden group cursor-pointer transition-colors flex flex-col"
               >
-                {/* Thumbnail */}
-                <div className="relative aspect-[4/5] bg-black/60 overflow-hidden">
+                {/* 16:9 Cinematic Video Viewport */}
+                <div className="relative aspect-video bg-[#050608] overflow-hidden">
                   <img
                     src={scene.imageUrl}
                     alt={scene.title}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    className="w-full h-full object-cover transition-opacity duration-200 group-hover:opacity-90"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
-                  <div className="absolute top-2 right-2 p-1 rounded-md bg-black/60 backdrop-blur-sm text-white/80 opacity-0 group-hover:opacity-100 transition-opacity">
+                  
+                  {/* Subtle Camera HUD Elements (Signature) */}
+                  <div className="absolute top-2.5 left-2.5 px-2 py-0.5 rounded bg-black/70 border border-white/10 font-mono text-[10px] text-[#d4af37] tabular-nums">
+                    PLAN 0{idx + 1}
+                  </div>
+
+                  <div className="absolute top-2.5 right-2.5 px-2 py-0.5 rounded bg-black/70 border border-white/10 font-mono text-[10px] text-[#9ba1ad] tabular-nums">
+                    {`00:00:0${(idx + 1) * 4}:00`}
+                  </div>
+
+                  <div className="absolute bottom-2.5 right-2.5 p-1.5 rounded bg-black/70 border border-white/10 text-white/80 opacity-0 group-hover:opacity-100 transition-opacity">
                     <Maximize2 className="w-3 h-3" />
                   </div>
                 </div>
 
-                {/* Scene Meta */}
-                <div className="p-2.5">
-                  <h4 className="text-xs font-bold text-[#f5f5f3] group-hover:text-gold-400 transition-colors">
-                    {scene.title}
-                  </h4>
-                  <p className="text-[10px] text-[#8e94a0] mt-0.5 font-medium">
-                    {scene.shotType}
-                  </p>
+                {/* Technical Meta Footer */}
+                <div className="p-3.5 flex items-center justify-between border-t border-[#181c24] bg-[#0c0e12]">
+                  <div>
+                    <h3 className="text-xs font-medium text-[#f5f5f3] group-hover:text-[#d4af37] transition-colors">
+                      {scene.title}
+                    </h3>
+                    <p className="text-[11px] text-[#646a78] mt-0.5">
+                      {scene.shotType}
+                    </p>
+                  </div>
+                  <span className="font-mono text-[10px] text-[#4d5464]">
+                    35mm • 2.39:1
+                  </span>
                 </div>
               </div>
             ))}
           </div>
 
-          {/* Timeline Assemble / Export Bar */}
-          <div className="bg-[#14161a] border border-[#232730] rounded-xl p-4 flex flex-col sm:flex-row items-center justify-between gap-4 mt-4">
+          {/* Assembly & Timeline Ribbon */}
+          <div className="bg-[#0e1115] border border-[#1e232d] rounded-xl p-4 flex flex-col sm:flex-row items-center justify-between gap-4">
             <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-lg bg-[#191c22] border border-[#2b2f3a] flex items-center justify-center text-gold-400">
-                <Film className="w-4 h-4" />
+              <div className="w-8 h-8 rounded-lg bg-[#14181f] border border-[#212630] flex items-center justify-center text-[#d4af37]">
+                <Video className="w-4 h-4" />
               </div>
               <div>
-                <p className="text-xs font-semibold text-[#f5f5f3]">
-                  Montage FFmpeg & Rendu 4K
+                <p className="text-xs font-medium text-[#f5f5f3]">
+                  Montage FFmpeg & Rendu Master 4K
                 </p>
-                <p className="text-[11px] text-[#8e94a0]">
-                  Transitions fondues, color grading cinéma et bande-son intégrée
+                <p className="text-[11px] text-[#646a78]">
+                  Transitions fondues, color grading cinéma et bande-son Dolby intégrée
                 </p>
               </div>
             </div>
 
             <button
               onClick={() => setActiveStep(4)}
-              className="inline-flex items-center gap-2 px-4 py-2 text-xs font-semibold rounded-lg bg-[#1e222a] border border-[#d4af37]/40 text-gold-400 hover:bg-[#252a34] hover:border-[#d4af37] transition-all"
+              className="inline-flex items-center gap-2 px-4 py-2 text-xs font-medium rounded-lg bg-[#14181f] border border-[#d4af37]/40 text-[#d4af37] hover:border-[#d4af37] hover:bg-[#191f28] transition-colors shrink-0"
             >
               <span>Lancer l&apos;assemblage final</span>
               <ChevronRight className="w-3.5 h-3.5" />
@@ -241,23 +284,29 @@ export const CinematicStudioView: React.FC = () => {
         </div>
       </div>
 
-      {/* Scene Detail Modal */}
+      {/* Scene Detail & Technical Inspection Modal */}
       {selectedScene && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
-          <div className="bg-[#14161a] border border-[#2b2f3a] rounded-2xl w-full max-w-xl p-6 space-y-4 shadow-2xl">
-            <div className="flex items-center justify-between border-b border-[#22262e] pb-3">
-              <h3 className="text-base font-bold text-[#f5f5f3]">
-                {selectedScene.title} — {selectedScene.shotType}
-              </h3>
+          <div className="bg-[#0e1115] border border-[#212630] rounded-2xl w-full max-w-xl p-6 space-y-4 shadow-2xl">
+            <div className="flex items-center justify-between border-b border-[#1b1f27] pb-3">
+              <div>
+                <h3 className="text-sm font-semibold text-[#f5f5f3]">
+                  {selectedScene.title}
+                </h3>
+                <p className="font-mono text-[11px] text-[#646a78] mt-0.5">
+                  {selectedScene.shotType} • Optique 35mm T1.5 • 24fps
+                </p>
+              </div>
               <button
                 onClick={() => setSelectedScene(null)}
-                className="text-[#8e94a0] hover:text-[#f5f5f3] p-1 rounded-lg"
+                className="text-[#646a78] hover:text-[#f5f5f3] p-1 rounded-lg transition-colors"
               >
-                ✕
+                <X className="w-4 h-4" />
               </button>
             </div>
 
-            <div className="aspect-video w-full rounded-xl overflow-hidden border border-[#232730]">
+            {/* Cinematic Frame Viewport */}
+            <div className="aspect-video w-full rounded-xl overflow-hidden border border-[#212630] bg-black">
               <img
                 src={selectedScene.imageUrl}
                 alt={selectedScene.title}
@@ -265,34 +314,35 @@ export const CinematicStudioView: React.FC = () => {
               />
             </div>
 
+            {/* Technical Specifications */}
             <div className="space-y-2 text-xs">
               <p className="text-[#f5f5f3]">
-                <strong className="text-gold-400">Description :</strong> {selectedScene.description}
+                <span className="text-[#9ba1ad]">Description :</span> {selectedScene.description}
               </p>
-              <p className="text-[#8e94a0]">
-                <strong className="text-[#f5f5f3]">Mouvement caméra :</strong> {selectedScene.cameraMovement}
+              <p className="text-[#9ba1ad]">
+                <span className="text-[#f5f5f3]">Mouvement caméra :</span> {selectedScene.cameraMovement}
               </p>
-              <p className="text-[#8e94a0]">
-                <strong className="text-[#f5f5f3]">Éclairage & Mood :</strong> {selectedScene.lighting}
+              <p className="text-[#9ba1ad]">
+                <span className="text-[#f5f5f3]">Éclairage & Mood :</span> {selectedScene.lighting}
               </p>
-              <div className="bg-[#0c0d0f] p-2.5 rounded-lg border border-[#232730] font-mono text-[10px] text-gold-300">
-                Prompt IA : {selectedScene.prompt}
+              <div className="bg-[#07080a] p-3 rounded-lg border border-[#1b1f27] font-mono text-[11px] text-[#9ba1ad] leading-relaxed">
+                <span className="text-[#d4af37]">Prompt IA :</span> {selectedScene.prompt}
               </div>
             </div>
 
-            <div className="flex justify-end gap-2 pt-2 border-t border-[#22262e]">
+            {/* Action Bar */}
+            <div className="flex justify-end gap-2.5 pt-3 border-t border-[#1b1f27]">
               <button
                 onClick={() => setSelectedScene(null)}
-                className="px-4 py-1.5 text-xs text-[#8e94a0] hover:text-[#f5f5f3]"
+                className="px-4 py-2 text-xs text-[#9ba1ad] hover:text-[#f5f5f3] font-medium transition-colors"
               >
                 Fermer
               </button>
               <button
                 onClick={() => {
-                  alert("Régénération du plan lancée avec Runway / Luma AI.");
                   setSelectedScene(null);
                 }}
-                className="px-4 py-1.5 text-xs font-semibold rounded-lg bg-gold-500 text-[#0c0d0f] hover:bg-gold-400"
+                className="px-4 py-2 text-xs font-medium rounded-lg bg-[#d4af37] text-[#07080a] hover:bg-[#e0bc45] transition-colors"
               >
                 Régénérer ce plan (Runway / Luma)
               </button>
