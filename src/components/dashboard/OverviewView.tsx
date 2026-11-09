@@ -8,17 +8,32 @@ import {
   ArrowRight,
   Plus,
   CheckCircle2,
-  Sparkles,
   Calendar,
   Layers,
   FolderPlus,
-  ListTodo
+  ListTodo,
+  Video,
+  Film,
+  Palette,
+  Briefcase,
+  LineChart,
+  ShieldCheck,
+  Check
 } from 'lucide-react';
 
 interface OverviewViewProps {
   onOpenNewProject: () => void;
 }
 
+/**
+ * OverviewView — Unslopped Studio Command Center
+ * 
+ * Design Principles:
+ * - World: Executive production suite (Matte obsidian #07080a, hairline borders #1e232d, satin gold #d4af37)
+ * - Signature: Master panoramic banner embedded with architectural precision
+ * - Typography: Sentence case, tabular figures, no emoji slop
+ * - Motion: Clean surface hover steps, no bouncy zooms, no spinning glowing rings
+ */
 export const OverviewView: React.FC<OverviewViewProps> = ({ onOpenNewProject }) => {
   const {
     language,
@@ -37,180 +52,165 @@ export const OverviewView: React.FC<OverviewViewProps> = ({ onOpenNewProject }) 
   const t = TRANSLATIONS[language].overview;
 
   const totalRevenue = invoices
-    .filter(i => i.type === 'invoice' && (i.status === 'paid' || i.status === 'sent'))
+    .filter((i) => i.type === 'invoice' && (i.status === 'paid' || i.status === 'sent'))
     .reduce((sum, i) => sum + i.totalAmount, 0);
 
-  const activeProjects = projects.filter(p => p.status === 'in_progress');
+  const modulesNav = [
+    { id: 'ugc', label: 'UGC Videos', icon: Video, desc: 'Acteurs virtuels & scripts IA' },
+    { id: 'cinematic', label: 'Cinematic Content', icon: Film, desc: 'Découpage & rushes 16:9' },
+    { id: 'creative', label: 'Stunning Visuals', icon: Palette, desc: 'Packshots & assets produit' },
+    { id: 'marketing', label: 'Smart Marketing', icon: LineChart, desc: 'Angles d\'accroche & personas' },
+    { id: 'business', label: 'Freelance Business', icon: Briefcase, desc: 'Devis, factures & CRM' }
+  ];
 
   return (
     <div className="space-y-6">
-      {/* Official Master Panoramic Banner Showcase */}
-      <div className="relative overflow-hidden rounded-2xl border border-[#d4af37]/35 shadow-[0_4px_35px_rgba(212,175,55,0.18)] bg-[#090b0e] group">
-        <div className="relative">
+      {/* Master Panoramic Studio Showcase */}
+      <section className="relative overflow-hidden rounded-2xl border border-[#212630] bg-[#090b0e]">
+        <div className="relative w-full aspect-[21/9] sm:aspect-[24/9] max-h-[300px] overflow-hidden bg-black">
           <img
             src="/banner.jpg"
             alt="AI UGC Studio — Personal Edition"
-            className="w-full h-auto object-cover max-h-[280px] lg:max-h-[320px] transition-transform duration-700 group-hover:scale-[1.01]"
+            className="w-full h-full object-cover object-center"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-[#090b0e] via-transparent to-transparent opacity-70" />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#090b0e] via-transparent to-transparent opacity-80" />
         </div>
 
-        {/* Interactive Quick-Action Ribbon matching Banner Categories */}
-        <div className="bg-[#0e1014] border-t border-[#1c2028] px-4 py-3 flex flex-wrap items-center justify-between gap-3 relative z-10">
-          <div className="flex items-center gap-2 overflow-x-auto text-[11px] font-semibold py-0.5">
-            <button
-              onClick={() => setActiveModule('ugc')}
-              className="gold-pill px-3 py-1 rounded-full flex items-center gap-1.5 shrink-0 hover:scale-105 active:scale-95 cursor-pointer"
-            >
-              <span>🎬</span>
-              <span>UGC Videos</span>
-            </button>
-            <button
-              onClick={() => setActiveModule('cinematic')}
-              className="gold-pill px-3 py-1 rounded-full flex items-center gap-1.5 shrink-0 hover:scale-105 active:scale-95 cursor-pointer"
-            >
-              <span>🎥</span>
-              <span>Cinematic Content</span>
-            </button>
-            <button
-              onClick={() => setActiveModule('creative')}
-              className="gold-pill px-3 py-1 rounded-full flex items-center gap-1.5 shrink-0 hover:scale-105 active:scale-95 cursor-pointer"
-            >
-              <span>🎨</span>
-              <span>Stunning Visuals</span>
-            </button>
-            <button
-              onClick={() => setActiveModule('marketing')}
-              className="gold-pill px-3 py-1 rounded-full flex items-center gap-1.5 shrink-0 hover:scale-105 active:scale-95 cursor-pointer"
-            >
-              <span>📈</span>
-              <span>Smart Marketing</span>
-            </button>
-            <button
-              onClick={() => setActiveModule('business')}
-              className="gold-pill px-3 py-1 rounded-full flex items-center gap-1.5 shrink-0 hover:scale-105 active:scale-95 cursor-pointer"
-            >
-              <span>💼</span>
-              <span>Freelance Business</span>
-            </button>
+        {/* Quick Navigation Rail */}
+        <div className="bg-[#0c0e13] border-t border-[#1b1f27] px-4 py-3 flex flex-wrap items-center justify-between gap-3">
+          <div className="flex items-center gap-1.5 overflow-x-auto text-[11px] py-0.5">
+            {modulesNav.map((item) => {
+              const Icon = item.icon;
+              return (
+                <button
+                  key={item.id}
+                  onClick={() => setActiveModule(item.id)}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#12151b] hover:bg-[#181d26] text-[#c7cbd4] hover:text-[#f5f5f3] border border-[#1e232d] hover:border-[#d4af37]/40 text-xs font-medium transition-colors shrink-0 cursor-pointer"
+                >
+                  <Icon className="w-3.5 h-3.5 text-[#d4af37]" />
+                  <span>{item.label}</span>
+                </button>
+              );
+            })}
           </div>
 
           <button
             onClick={() => setIsProductToAdModalOpen(true)}
-            className="px-4 py-1.5 rounded-lg bg-gradient-to-r from-[#e5b869] via-[#d4af37] to-[#aa7c11] text-[#07080a] text-xs font-extrabold shadow-[0_0_15px_rgba(212,175,55,0.3)] hover:scale-105 transition-all flex items-center gap-1.5 shrink-0 cursor-pointer"
+            className="px-3.5 py-1.5 rounded-lg bg-[#d4af37] text-[#07080a] text-xs font-semibold hover:bg-[#e0be48] active:bg-[#b89528] transition-colors flex items-center gap-1.5 shrink-0 cursor-pointer"
           >
-            <Sparkles className="w-3.5 h-3.5" />
-            <span>Lancer un workflow IA</span>
+            <span>Workflow Product-to-Ad</span>
+            <ArrowRight className="w-3.5 h-3.5" />
           </button>
         </div>
-      </div>
+      </section>
 
-      {/* Welcome Title */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 pt-1">
+      {/* Studio Header Telemetry */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pb-1 border-b border-[#1b1f27]">
         <div>
-          <h1 className="text-xl sm:text-2xl font-bold text-[#f5f5f3] tracking-tight flex items-center gap-2">
-            <span>Bienvenue dans votre Studio, {userProfile.name} !</span>
-            <span className="text-sm">👋</span>
+          <h1 className="text-xl font-semibold text-[#f5f5f3] tracking-tight">
+            Vue d&apos;ensemble du Studio
           </h1>
           <p className="text-xs text-[#8e94a0] mt-0.5">
-            {t.subtitle}
+            Espace de production de {userProfile.name} • {userProfile.studioName}
           </p>
         </div>
-        <div className="flex items-center gap-2 self-start sm:self-auto">
-          <span className="text-[11px] font-medium text-[#8e94a0] bg-[#0e1014] border border-[#1c2028] px-3 py-1 rounded-lg">
-            Direction Artistique : <span className="text-gold-400 font-semibold">Noir Obsidienne & Or Métallisé</span>
-          </span>
+
+        <div className="flex items-center gap-2 self-start sm:self-auto text-[11px] font-mono text-[#8e94a0] bg-[#0e1116] border border-[#1e232d] px-3 py-1.5 rounded-lg">
+          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+          <span>Moteurs IA & Storage R2 opérationnels</span>
         </div>
       </div>
 
-      {/* 4 Dynamic Stats Cards */}
+      {/* 4 Metric Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {/* Active Clients */}
         <div
           onClick={() => setActiveModule('clients')}
-          className="bg-[#0e1014] border border-[#1c2028] hover:border-[#d4af37]/50 p-4 rounded-xl transition-all cursor-pointer group shadow-[0_4px_20px_rgba(0,0,0,0.5)] hover:shadow-[0_4px_25px_rgba(212,175,55,0.15)]"
+          className="bg-[#0e1115] border border-[#1e232d] hover:border-[#2f3746] p-4 rounded-xl transition-colors cursor-pointer group"
         >
-          <div className="text-2xl font-bold text-[#f5f5f3] group-hover:text-gold-400 transition-colors">
+          <div className="text-xs text-[#8e94a0] flex items-center justify-between">
+            <span>{t.activeClients}</span>
+            <span className="text-[11px] font-mono text-[#656a76]">CRM</span>
+          </div>
+          <div className="text-2xl font-medium text-[#f5f5f3] mt-2 font-mono tabular-nums">
             {clients.length}
           </div>
-          <div className="text-xs text-[#8e94a0] mt-1 flex items-center justify-between">
-            <span>{t.activeClients}</span>
-            <span className="text-emerald-400 font-semibold flex items-center gap-0.5 text-[11px]">
-              <TrendingUp className="w-3 h-3" /> Actif
-            </span>
+          <div className="text-[11px] text-emerald-400 mt-1 flex items-center gap-1 font-mono">
+            <TrendingUp className="w-3 h-3" />
+            <span>Portefeuille actif</span>
           </div>
         </div>
 
         {/* Ongoing Projects */}
         <div
           onClick={() => setActiveModule('projects')}
-          className="bg-[#0e1014] border border-[#1c2028] hover:border-[#d4af37]/50 p-4 rounded-xl transition-all cursor-pointer group shadow-[0_4px_20px_rgba(0,0,0,0.5)] hover:shadow-[0_4px_25px_rgba(212,175,55,0.15)]"
+          className="bg-[#0e1115] border border-[#1e232d] hover:border-[#2f3746] p-4 rounded-xl transition-colors cursor-pointer group"
         >
-          <div className="text-2xl font-bold text-[#f5f5f3] group-hover:text-gold-400 transition-colors">
+          <div className="text-xs text-[#8e94a0] flex items-center justify-between">
+            <span>{t.ongoingProjects}</span>
+            <span className="text-[11px] font-mono text-[#656a76]">RUN</span>
+          </div>
+          <div className="text-2xl font-medium text-[#f5f5f3] mt-2 font-mono tabular-nums">
             {projects.length}
           </div>
-          <div className="text-xs text-[#8e94a0] mt-1 flex items-center justify-between">
-            <span>{t.ongoingProjects}</span>
-            <span className="text-emerald-400 font-semibold flex items-center gap-0.5 text-[11px]">
-              <TrendingUp className="w-3 h-3" /> Suivi
-            </span>
+          <div className="text-[11px] text-[#9ba1ad] mt-1 flex items-center gap-1 font-mono">
+            <span>En cours de validation</span>
           </div>
         </div>
 
         {/* Campaigns / Videos Created */}
         <div
           onClick={() => setActiveModule('ugc')}
-          className="bg-[#0e1014] border border-[#1c2028] hover:border-[#d4af37]/50 p-4 rounded-xl transition-all cursor-pointer group shadow-[0_4px_20px_rgba(0,0,0,0.5)] hover:shadow-[0_4px_25px_rgba(212,175,55,0.15)]"
+          className="bg-[#0e1115] border border-[#1e232d] hover:border-[#2f3746] p-4 rounded-xl transition-colors cursor-pointer group"
         >
-          <div className="text-2xl font-bold text-[#f5f5f3] group-hover:text-gold-400 transition-colors">
+          <div className="text-xs text-[#8e94a0] flex items-center justify-between">
+            <span>{t.campaignsCreated}</span>
+            <span className="text-[11px] font-mono text-[#656a76]">UGC</span>
+          </div>
+          <div className="text-2xl font-medium text-[#f5f5f3] mt-2 font-mono tabular-nums">
             {videoJobs.length}
           </div>
-          <div className="text-xs text-[#8e94a0] mt-1 flex items-center justify-between">
-            <span>{t.campaignsCreated}</span>
-            <span className="text-emerald-400 font-semibold flex items-center gap-0.5 text-[11px]">
-              <TrendingUp className="w-3 h-3" /> UGC
-            </span>
+          <div className="text-[11px] text-emerald-400 mt-1 flex items-center gap-1 font-mono">
+            <TrendingUp className="w-3 h-3" />
+            <span>Rendus générés</span>
           </div>
         </div>
 
         {/* Monthly Revenue */}
         <div
           onClick={() => setActiveModule('business')}
-          className="bg-[#0e1014] border border-[#1c2028] hover:border-[#d4af37]/50 p-4 rounded-xl transition-all cursor-pointer group shadow-[0_4px_20px_rgba(0,0,0,0.5)] hover:shadow-[0_4px_25px_rgba(212,175,55,0.15)]"
+          className="bg-[#0e1115] border border-[#1e232d] hover:border-[#2f3746] p-4 rounded-xl transition-colors cursor-pointer group"
         >
-          <div className="text-2xl font-bold text-gold-400 group-hover:text-gold-300 transition-colors">
+          <div className="text-xs text-[#8e94a0] flex items-center justify-between">
+            <span>{t.revenueMonth}</span>
+            <span className="text-[11px] font-mono text-[#656a76]">FIN</span>
+          </div>
+          <div className="text-2xl font-medium text-[#d4af37] mt-2 font-mono tabular-nums">
             {userProfile.currency || '€'}{totalRevenue.toLocaleString()}
           </div>
-          <div className="text-xs text-[#8e94a0] mt-1 flex items-center justify-between">
-            <span>{t.revenueMonth}</span>
-            <span className="text-emerald-400 font-semibold flex items-center gap-0.5 text-[11px]">
-              <TrendingUp className="w-3 h-3" /> Réel
-            </span>
+          <div className="text-[11px] text-emerald-400 mt-1 flex items-center gap-1 font-mono">
+            <span>Facturation validée</span>
           </div>
         </div>
       </div>
 
       {/* Hero Showcase Card: Product-to-Ad */}
-      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-[#0e1014] via-[#14171e] to-[#0a0c10] border border-[#d4af37]/25 p-6 lg:p-8 shadow-[0_4px_30px_rgba(0,0,0,0.7)]">
-        {/* Glow backdrop */}
-        <div className="absolute right-12 top-1/2 -translate-y-1/2 w-64 h-64 bg-[#d4af37]/15 rounded-full blur-3xl pointer-events-none" />
-
-        <div className="flex flex-col md:flex-row items-center justify-between gap-6 relative z-10">
-          <div className="max-w-md space-y-3">
-            <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[#d4af37]/15 border border-[#d4af37]/35 text-gold-300 text-[10px] font-bold uppercase tracking-wider">
-              <Sparkles className="w-3 h-3 text-gold-400" />
-              Workflow Différenciant
+      <section className="relative overflow-hidden rounded-xl bg-[#0e1115] border border-[#1e232d] p-6 lg:p-7">
+        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 relative z-10">
+          <div className="max-w-xl space-y-2.5">
+            <div className="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-full bg-[#181d26] border border-[#272e3d] text-[#d4af37] text-[10px] font-mono tracking-wider">
+              <span>PIPELINE AUTOMATISÉ</span>
             </div>
-            <h2 className="text-xl lg:text-2xl font-bold text-[#f5f5f3] tracking-tight">
+            <h2 className="text-lg lg:text-xl font-semibold text-[#f5f5f3] tracking-tight">
               {t.productToAdTitle}
             </h2>
-            <p className="text-xs lg:text-sm text-[#8e94a0] leading-relaxed">
+            <p className="text-xs text-[#8e94a0] leading-relaxed">
               {t.productToAdDesc}
             </p>
             <div className="pt-2">
               <button
                 onClick={() => setIsProductToAdModalOpen(true)}
-                className="inline-flex items-center gap-2 px-5 py-2.5 text-xs font-extrabold rounded-lg bg-gradient-to-r from-[#e5b869] via-[#d4af37] to-[#aa7c11] text-[#07080a] hover:from-[#f0c776] hover:to-[#bd8a16] shadow-[0_0_20px_rgba(212,175,55,0.3)] transition-all transform hover:scale-[1.02] cursor-pointer"
+                className="inline-flex items-center gap-2 px-4 py-2 text-xs font-semibold rounded-lg bg-[#d4af37] text-[#07080a] hover:bg-[#e0be48] active:bg-[#b89528] transition-colors cursor-pointer"
               >
                 <span>{t.launchWorkflow}</span>
                 <ArrowRight className="w-3.5 h-3.5" />
@@ -218,45 +218,49 @@ export const OverviewView: React.FC<OverviewViewProps> = ({ onOpenNewProject }) 
             </div>
           </div>
 
-          {/* Visual Showcase: Luxury Product Visual with Glowing Gold Rim */}
-          <div className="relative w-44 h-44 sm:w-52 sm:h-52 flex items-center justify-center">
-            <div className="absolute inset-0 rounded-full border-2 border-[#d4af37]/50 shadow-[0_0_30px_rgba(212,175,55,0.4)] animate-[spin_20s_linear_infinite]" />
-            <div className="absolute inset-2 rounded-full border border-dashed border-[#d4af37]/30" />
-            <img
-              src="https://images.unsplash.com/photo-1608248597359-33534d08ee7a?w=400&auto=format&fit=crop&q=80"
-              alt="Studio Product Visual"
-              className="w-32 h-32 sm:w-36 sm:h-36 object-cover rounded-2xl shadow-2xl relative z-10 border border-[#d4af37]/50 ring-4 ring-[#0e1014]"
-            />
+          {/* Clean product preview frame without spinning halos */}
+          <div className="w-full md:w-auto flex items-center justify-center shrink-0">
+            <div className="relative w-40 h-40 sm:w-44 sm:h-44 rounded-xl overflow-hidden border border-[#212630] bg-[#07080a]">
+              <img
+                src="https://images.unsplash.com/photo-1608248597359-33534d08ee7a?w=400&auto=format&fit=crop&q=80"
+                alt="Product visual"
+                className="w-full h-full object-cover"
+              />
+              <div className="absolute bottom-2 left-2 right-2 px-2 py-1 rounded bg-[#07080a]/80 backdrop-blur border border-[#1e232d] text-[10px] font-mono text-[#c7cbd4] flex items-center justify-between">
+                <span>PACKSHOT</span>
+                <span className="text-[#d4af37]">4K RES</span>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
+      </section>
 
-      {/* Two Column Grid: Bottom row (Recent Projects, Priority Tasks, Activity) */}
+      {/* Two Column Grid: Bottom row (Recent Projects, Priority Tasks, Studio Log) */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Projets récents */}
-        <div className="bg-[#0e1014] border border-[#1c2028] rounded-xl p-5 shadow-[0_4px_20px_rgba(0,0,0,0.5)] flex flex-col">
+        <div className="bg-[#0e1115] border border-[#1e232d] rounded-xl p-5 flex flex-col">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-xs font-semibold uppercase tracking-wider text-[#f5f5f3]">
+            <h3 className="text-xs font-medium text-[#f5f5f3]">
               {t.recentProjects}
             </h3>
             {projects.length > 0 && (
               <button
                 onClick={() => setActiveModule('projects')}
-                className="text-[11px] text-gold-400 hover:text-gold-300 font-semibold"
+                className="text-[11px] text-[#d4af37] hover:underline font-medium"
               >
                 {t.viewAll}
               </button>
             )}
           </div>
 
-          <div className="space-y-3 flex-1 flex flex-col justify-center">
+          <div className="space-y-2.5 flex-1 flex flex-col justify-center">
             {projects.length === 0 ? (
-              <div className="py-6 px-4 text-center rounded-lg bg-[#13161c]/60 border border-dashed border-[#1c2028] space-y-2.5">
-                <FolderPlus className="w-8 h-8 text-[#656a76] mx-auto" />
-                <p className="text-xs text-[#8e94a0]">Aucun projet en cours pour l&apos;instant</p>
+              <div className="py-6 px-4 text-center rounded-lg bg-[#07080a] border border-[#1e232d] space-y-2.5">
+                <FolderPlus className="w-7 h-7 text-[#656a76] mx-auto" />
+                <p className="text-xs text-[#8e94a0]">Aucun projet en cours</p>
                 <button
                   onClick={onOpenNewProject}
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg bg-[#1c2028] hover:bg-[#282d39] text-gold-400 border border-[#d4af37]/30 transition-colors"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg bg-[#14181f] text-[#d4af37] border border-[#d4af37]/30 hover:border-[#d4af37] transition-colors"
                 >
                   <Plus className="w-3.5 h-3.5" />
                   <span>Nouveau projet</span>
@@ -267,30 +271,30 @@ export const OverviewView: React.FC<OverviewViewProps> = ({ onOpenNewProject }) 
                 <div
                   key={proj.id}
                   onClick={() => setActiveModule('projects')}
-                  className="flex items-center gap-3 p-2.5 rounded-lg bg-[#13161c] border border-[#1c2028] hover:border-[#d4af37]/50 transition-all cursor-pointer group"
+                  className="flex items-center gap-3 p-2.5 rounded-lg bg-[#07080a] border border-[#1c2028] hover:border-[#2f3746] transition-colors cursor-pointer group"
                 >
                   <img
                     src={proj.thumbnailUrl}
                     alt={proj.name}
-                    className="w-12 h-12 rounded-lg object-cover border border-[#282d39]"
+                    className="w-11 h-11 rounded-lg object-cover border border-[#1e232d] shrink-0"
                   />
                   <div className="flex-1 min-w-0">
-                    <h4 className="text-xs font-semibold text-[#f5f5f3] group-hover:text-gold-400 transition-colors truncate">
+                    <h4 className="text-xs font-medium text-[#f5f5f3] truncate">
                       {proj.name}
                     </h4>
-                    <p className="text-[11px] text-[#8e94a0] mt-0.5 flex items-center gap-1.5">
+                    <p className="text-[11px] text-[#8e94a0] mt-0.5 flex items-center gap-1.5 font-mono">
                       <span>{proj.clientName}</span>
                       <span>•</span>
-                      <span className="font-semibold text-gold-400">{proj.progress}%</span>
+                      <span className="text-[#d4af37]">{proj.progress}%</span>
                     </p>
-                    <div className="w-full bg-[#1c2028] h-1 rounded-full mt-2 overflow-hidden">
+                    <div className="w-full bg-[#181d26] h-1 rounded-full mt-2 overflow-hidden">
                       <div
-                        className="bg-gradient-to-r from-[#e5b869] to-[#d4af37] h-full rounded-full"
+                        className="bg-[#d4af37] h-full rounded-full"
                         style={{ width: `${proj.progress}%` }}
                       />
                     </div>
                   </div>
-                  <ArrowRight className="w-3.5 h-3.5 text-[#656a76] group-hover:text-gold-400 group-hover:translate-x-0.5 transition-all" />
+                  <ArrowRight className="w-3.5 h-3.5 text-[#656a76] group-hover:text-[#f5f5f3] transition-colors" />
                 </div>
               ))
             )}
@@ -298,15 +302,15 @@ export const OverviewView: React.FC<OverviewViewProps> = ({ onOpenNewProject }) 
         </div>
 
         {/* Tâches prioritaires */}
-        <div className="bg-[#0e1014] border border-[#1c2028] rounded-xl p-5 shadow-[0_4px_20px_rgba(0,0,0,0.5)] flex flex-col">
+        <div className="bg-[#0e1115] border border-[#1e232d] rounded-xl p-5 flex flex-col">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-xs font-semibold uppercase tracking-wider text-[#f5f5f3]">
+            <h3 className="text-xs font-medium text-[#f5f5f3]">
               {t.priorityTasks}
             </h3>
             {tasks.length > 0 && (
               <button
                 onClick={() => setActiveModule('projects')}
-                className="text-[11px] text-gold-400 hover:text-gold-300 font-semibold"
+                className="text-[11px] text-[#d4af37] hover:underline font-medium"
               >
                 {t.viewAll}
               </button>
@@ -315,9 +319,9 @@ export const OverviewView: React.FC<OverviewViewProps> = ({ onOpenNewProject }) 
 
           <div className="space-y-2 flex-1 flex flex-col justify-center">
             {tasks.length === 0 ? (
-              <div className="py-6 px-4 text-center rounded-lg bg-[#13161c]/60 border border-dashed border-[#1c2028] space-y-2.5">
-                <ListTodo className="w-8 h-8 text-[#656a76] mx-auto" />
-                <p className="text-xs text-[#8e94a0]">Toutes vos tâches sont à jour</p>
+              <div className="py-6 px-4 text-center rounded-lg bg-[#07080a] border border-[#1e232d] space-y-2.5">
+                <ListTodo className="w-7 h-7 text-[#656a76] mx-auto" />
+                <p className="text-xs text-[#8e94a0]">Toutes les tâches sont traitées</p>
                 <button
                   onClick={() => {
                     const taskName = prompt('Nom de votre tâche :');
@@ -330,7 +334,7 @@ export const OverviewView: React.FC<OverviewViewProps> = ({ onOpenNewProject }) 
                       });
                     }
                   }}
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg bg-[#1c2028] hover:bg-[#282d39] text-gold-400 border border-[#d4af37]/30 transition-colors"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg bg-[#14181f] text-[#d4af37] border border-[#d4af37]/30 hover:border-[#d4af37] transition-colors"
                 >
                   <Plus className="w-3.5 h-3.5" />
                   <span>Ajouter une tâche</span>
@@ -341,10 +345,10 @@ export const OverviewView: React.FC<OverviewViewProps> = ({ onOpenNewProject }) 
                 <div
                   key={task.id}
                   onClick={() => toggleTaskStatus(task.id)}
-                  className={`flex items-center justify-between p-2.5 rounded-lg border transition-all cursor-pointer group ${
+                  className={`flex items-center justify-between p-2.5 rounded-lg border transition-colors cursor-pointer ${
                     task.status === 'done'
-                      ? 'bg-[#0a0c0f] border-[#181a20] opacity-60'
-                      : 'bg-[#13161c] border-[#1c2028] hover:border-[#d4af37]/40'
+                      ? 'bg-[#07080a] border-[#181a20] opacity-50'
+                      : 'bg-[#07080a] border-[#1c2028] hover:border-[#2f3746]'
                   }`}
                 >
                   <div className="flex items-center gap-2.5 min-w-0 pr-2">
@@ -352,23 +356,23 @@ export const OverviewView: React.FC<OverviewViewProps> = ({ onOpenNewProject }) 
                       className={`w-4 h-4 rounded border flex items-center justify-center transition-colors ${
                         task.status === 'done'
                           ? 'bg-emerald-500/20 border-emerald-500 text-emerald-400'
-                          : 'border-[#282d39] group-hover:border-[#d4af37]'
+                          : 'border-[#282d39]'
                       }`}
                     >
-                      {task.status === 'done' && <CheckCircle2 className="w-3 h-3" />}
+                      {task.status === 'done' && <Check className="w-3 h-3" />}
                     </div>
                     <span
                       className={`text-xs truncate ${
                         task.status === 'done'
                           ? 'line-through text-[#656a76]'
-                          : 'text-[#f5f5f3] group-hover:text-gold-300'
+                          : 'text-[#f5f5f3]'
                       }`}
                     >
                       {task.title}
                     </span>
                   </div>
 
-                  <span className="text-[10px] font-medium px-2 py-0.5 rounded whitespace-nowrap bg-[#1c2028] text-[#8e94a0]">
+                  <span className="text-[10px] font-mono px-2 py-0.5 rounded whitespace-nowrap bg-[#13161c] text-[#8e94a0]">
                     {task.deadline}
                   </span>
                 </div>
@@ -378,34 +382,34 @@ export const OverviewView: React.FC<OverviewViewProps> = ({ onOpenNewProject }) 
         </div>
 
         {/* Activité récente */}
-        <div className="bg-[#0e1014] border border-[#1c2028] rounded-xl p-5 shadow-[0_4px_20px_rgba(0,0,0,0.5)] flex flex-col">
+        <div className="bg-[#0e1115] border border-[#1e232d] rounded-xl p-5 flex flex-col">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-xs font-semibold uppercase tracking-wider text-[#f5f5f3]">
+            <h3 className="text-xs font-medium text-[#f5f5f3]">
               {t.recentActivity}
             </h3>
           </div>
 
-          <div className="space-y-3 flex-1">
-            <div className="flex items-center gap-3 p-2.5 rounded-lg bg-[#13161c] border border-[#1c2028]">
-              <div className="w-9 h-9 rounded-full bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
+          <div className="space-y-2.5 flex-1">
+            <div className="flex items-center gap-3 p-2.5 rounded-lg bg-[#07080a] border border-[#1c2028]">
+              <div className="w-8 h-8 rounded-lg bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 shrink-0">
                 <CheckCircle2 className="w-4 h-4" />
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-[11px] text-[#8e94a0]">À l&apos;instant</p>
+                <p className="text-[10px] font-mono text-[#8e94a0]">Système vérifié</p>
                 <p className="text-xs font-medium text-[#f5f5f3] truncate">
-                  Studio initialisé et prêt pour la production
+                  Architecture durcie • Next.js 15
                 </p>
               </div>
             </div>
 
-            <div className="flex items-center gap-3 p-2.5 rounded-lg bg-[#13161c] border border-[#1c2028]">
-              <div className="w-9 h-9 rounded-full bg-[#d4af37]/15 border border-[#d4af37]/30 flex items-center justify-center text-gold-400">
-                <Sparkles className="w-4 h-4" />
+            <div className="flex items-center gap-3 p-2.5 rounded-lg bg-[#07080a] border border-[#1c2028]">
+              <div className="w-8 h-8 rounded-lg bg-[#d4af37]/10 border border-[#d4af37]/30 flex items-center justify-center text-[#d4af37] shrink-0">
+                <ShieldCheck className="w-4 h-4" />
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-[11px] text-[#8e94a0]">Identité Visuelle</p>
+                <p className="text-[10px] font-mono text-[#8e94a0]">Direction Artistique</p>
                 <p className="text-xs font-medium text-[#f5f5f3] truncate">
-                  Direction Noir Obsidienne & Or Métallisé active
+                  Noir Obsidienne & Or Satiné actif
                 </p>
               </div>
             </div>

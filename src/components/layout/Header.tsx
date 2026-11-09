@@ -83,11 +83,11 @@ export const Header: React.FC<HeaderProps> = ({ onToggleMobileMenu, onOpenNewPro
         </button>
 
         {/* Status indicator */}
-        <div className="hidden sm:flex items-center gap-2 px-3 py-1 rounded-full bg-[#0e1014] border border-[#1e232d] text-[11px] text-[#8e94a0] shadow-sm">
-          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_8px_rgba(52,211,153,0.6)]" />
+        <div className="hidden sm:flex items-center gap-2 px-3 py-1 rounded-full bg-[#0e1014] border border-[#1e232d] text-[11px] text-[#8e94a0]">
+          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
           <span className="text-[#f5f5f3] font-medium">{t.header.systemOnline}</span>
           <span className="text-[#3b4252]">|</span>
-          <span className="text-gold-400 font-semibold tracking-wide">Studio Engine & R2 Online</span>
+          <span className="text-[#d4af37] font-medium font-mono">Engine & R2 Ready</span>
         </div>
       </div>
 
@@ -95,10 +95,9 @@ export const Header: React.FC<HeaderProps> = ({ onToggleMobileMenu, onOpenNewPro
         {/* Product-to-Ad quick launcher */}
         <button
           onClick={() => setIsProductToAdModalOpen(true)}
-          className="hidden md:flex items-center gap-2 px-3 py-1.5 text-xs font-semibold rounded-lg bg-[#111318] border border-[#d4af37]/35 text-[#f5f5f3] hover:bg-[#181b22] hover:border-[#d4af37]/70 transition-all group shadow-[0_0_12px_rgba(212,175,55,0.1)]"
+          className="hidden md:flex items-center gap-2 px-3 py-1.5 text-xs font-medium rounded-lg bg-[#11141a] border border-[#1e232d] text-[#c7cbd4] hover:text-[#f5f5f3] hover:border-[#d4af37]/40 transition-colors"
         >
-          <Sparkles className="w-3.5 h-3.5 text-gold-400 group-hover:rotate-12 transition-transform" />
-          <span>Product-to-Ad Wizard</span>
+          <span>Product-to-Ad</span>
         </button>
 
         {/* Notifications */}
@@ -110,7 +109,7 @@ export const Header: React.FC<HeaderProps> = ({ onToggleMobileMenu, onOpenNewPro
           >
             <Bell className="w-4 h-4" />
             {pendingTasksCount > 0 && (
-              <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-[#d4af37] ring-2 ring-[#07080a] shadow-[0_0_6px_rgba(212,175,55,0.8)]" />
+              <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 rounded-full bg-[#d4af37]" />
             )}
           </button>
         </div>
@@ -118,7 +117,7 @@ export const Header: React.FC<HeaderProps> = ({ onToggleMobileMenu, onOpenNewPro
         {/* Primary Action Button */}
         <button
           onClick={btnConfig.action}
-          className="flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-bold rounded-lg bg-gradient-to-r from-[#e5b869] via-[#d4af37] to-[#aa7c11] text-[#07080a] hover:from-[#f0c776] hover:to-[#bd8a16] shadow-[0_0_18px_rgba(212,175,55,0.35)] transition-all hover:scale-[1.02] active:scale-[0.98]"
+          className="flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-semibold rounded-lg bg-[#d4af37] text-[#07080a] hover:bg-[#e0be48] active:bg-[#b89528] transition-colors"
         >
           <span>{btnConfig.label}</span>
         </button>

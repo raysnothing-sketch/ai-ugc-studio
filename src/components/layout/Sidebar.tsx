@@ -63,18 +63,18 @@ export const Sidebar: React.FC<SidebarProps> = ({ onOpenNewProject, isMobileOpen
       >
         {/* Brand Header with Official Metallic App Icon */}
         <div className="flex items-center gap-3 px-4 py-4 border-b border-[#1a1e26]">
-          <div className="relative w-9 h-9 rounded-xl overflow-hidden p-[1.5px] bg-gradient-to-br from-[#fff2c6] via-[#d4af37] to-[#805a10] shadow-[0_0_16px_rgba(212,175,55,0.35)] shrink-0">
+          <div className="relative w-8 h-8 rounded-lg overflow-hidden border border-[#d4af37]/40 shrink-0 bg-[#07080a]">
             <img
               src="/icon.jpg"
               alt="AI UGC Studio"
-              className="w-full h-full object-cover rounded-[9.5px]"
+              className="w-full h-full object-cover"
             />
           </div>
           <div className="min-w-0">
-            <h1 className="font-bold text-sm tracking-wide text-[#f5f5f3] flex items-center gap-1.5 truncate">
+            <h1 className="font-semibold text-xs tracking-tight text-[#f5f5f3] truncate">
               {userProfile.studioName}
             </h1>
-            <span className="text-[10px] text-gold-400 font-semibold uppercase tracking-wider block">
+            <span className="text-[10px] text-[#d4af37] font-mono tracking-wider block">
               Personal Edition
             </span>
           </div>
@@ -89,7 +89,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ onOpenNewProject, isMobileOpen
               placeholder={t.searchPlaceholder}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-9 pr-3 py-1.5 text-xs bg-[#0f1116] border border-[#1e232d] rounded-lg text-[#f5f5f3] placeholder-[#656a76] focus:outline-none focus:border-[#d4af37] focus:ring-1 focus:ring-[#d4af37]/40 transition-all"
+              className="w-full pl-9 pr-3 py-1.5 text-xs bg-[#0f1116] border border-[#1e232d] rounded-lg text-[#f5f5f3] placeholder-[#656a76] focus:outline-none focus:border-[#d4af37] transition-colors"
             />
           </div>
         </div>
@@ -106,25 +106,27 @@ export const Sidebar: React.FC<SidebarProps> = ({ onOpenNewProject, isMobileOpen
                   setActiveModule(item.id);
                   if (onCloseMobile) onCloseMobile();
                 }}
-                className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-xs font-medium transition-all group ${
+                className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-xs font-medium transition-colors group cursor-pointer ${
                   isActive
-                    ? 'bg-gradient-to-r from-[#d4af37]/15 to-transparent text-[#ffffff] shadow-sm border-l-2 border-[#d4af37] shadow-[inset_0_0_12px_rgba(212,175,55,0.06)]'
-                    : 'text-[#8e94a0] hover:text-[#f5f5f3] hover:bg-[#12141a]'
+                    ? 'bg-[#141820] text-[#f5f5f3] border-l-2 border-[#d4af37]'
+                    : 'text-[#8e94a0] hover:text-[#f5f5f3] hover:bg-[#0f1217]'
                 }`}
               >
                 <Icon
                   className={`w-4 h-4 transition-colors ${
-                    isActive ? 'text-[#d4af37]' : 'text-[#656a76] group-hover:text-[#d4af37]'
+                    isActive ? 'text-[#d4af37]' : 'text-[#656a76] group-hover:text-[#9ba1ad]'
                   }`}
                 />
                 <span className="truncate">{item.label}</span>
                 {item.id === 'ugc' && (
-                  <span className="ml-auto text-[9px] font-semibold bg-[#d4af37]/15 text-[#d4af37] px-1.5 py-0.5 rounded-full border border-[#d4af37]/30">
-                    AI
+                  <span className="ml-auto text-[9px] font-mono font-medium text-[#d4af37] bg-[#1a1f29] px-1.5 py-0.5 rounded border border-[#262e3d]">
+                    UGC
                   </span>
                 )}
-                {item.id === 'marketing' && (
-                  <span className="ml-auto w-1.5 h-1.5 rounded-full bg-[#d4af37] animate-pulse" />
+                {item.id === 'cinematic' && (
+                  <span className="ml-auto text-[9px] font-mono font-medium text-[#d4af37] bg-[#1a1f29] px-1.5 py-0.5 rounded border border-[#262e3d]">
+                    16:9
+                  </span>
                 )}
               </button>
             );
@@ -132,7 +134,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ onOpenNewProject, isMobileOpen
         </nav>
 
         {/* Quick Language Toggle & Action */}
-        <div className="px-4 py-2 border-t border-[#1a1e26] bg-[#07080a]/60">
+        <div className="px-4 py-2 border-t border-[#1a1e26] bg-[#07080a]">
           <div className="flex items-center justify-between text-xs text-[#8e94a0] mb-2">
             <span className="flex items-center gap-1.5 text-[11px]">
               <Globe className="w-3.5 h-3.5 text-[#d4af37]" /> Langue :
@@ -142,9 +144,9 @@ export const Sidebar: React.FC<SidebarProps> = ({ onOpenNewProject, isMobileOpen
                 <button
                   key={lang}
                   onClick={() => setLanguage(lang)}
-                  className={`px-1.5 py-0.5 text-[10px] font-bold rounded uppercase transition-colors ${
+                  className={`px-1.5 py-0.5 text-[10px] font-mono font-semibold rounded uppercase transition-colors ${
                     language === lang
-                      ? 'bg-gradient-to-r from-[#e5b869] to-[#d4af37] text-[#07080a]'
+                      ? 'bg-[#d4af37] text-[#07080a]'
                       : 'text-[#8e94a0] hover:text-[#f5f5f3]'
                   }`}
                 >
