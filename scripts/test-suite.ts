@@ -1,6 +1,6 @@
-import { StudioAuthService } from '../src/server/auth/studio-auth.ts';
-import { validateUploadFile, verifyMagicBytes } from '../src/server/utils/file-validator.ts';
-import { clientInputSchema, projectInputSchema, productToAdSchema } from '../src/server/validation/schemas.ts';
+import { StudioAuthService } from '../src/server/auth/studio-auth';
+import { validateUploadFile, verifyMagicBytes } from '../src/server/utils/file-validator';
+import { clientInputSchema, projectInputSchema, productToAdSchema } from '../src/server/validation/schemas';
 
 console.log('=== RUNNING AI UGC STUDIO VALIDATION SUITE ===\n');
 
