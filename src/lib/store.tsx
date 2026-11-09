@@ -117,26 +117,60 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [isProfileModalOpen, setIsProfileModalOpen] = useState<boolean>(false);
 
-  // Clean hydration from localStorage without data loss
+  // Clean hydration from localStorage without fictional/mock data
   useEffect(() => {
     try {
+      const STORAGE_CLEAN_VERSION = 'v3_zero_mock_2026';
+      const currentVer = localStorage.getItem('ai_ugc_storage_version');
+
+      // Purge legacy mock data once to guarantee zero fake data
+      if (currentVer !== STORAGE_CLEAN_VERSION) {
+        localStorage.removeItem('ai_ugc_clients');
+        localStorage.removeItem('ai_ugc_projects');
+        localStorage.removeItem('ai_ugc_tasks');
+        localStorage.removeItem('ai_ugc_invoices');
+        localStorage.removeItem('ai_ugc_portfolio');
+        localStorage.removeItem('ai_ugc_deliveries');
+        localStorage.removeItem('ai_ugc_video_jobs');
+        localStorage.removeItem('ai_ugc_marketing');
+        localStorage.setItem('ai_ugc_storage_version', STORAGE_CLEAN_VERSION);
+      }
+
       const savedLang = localStorage.getItem('ai_ugc_lang') as Language;
       if (savedLang) setLanguage(savedLang);
 
       const savedProfile = localStorage.getItem('ai_ugc_user_profile');
       if (savedProfile) setUserProfile(JSON.parse(savedProfile));
 
+      const isMockItem = (item: any) => {
+        if (!item) return false;
+        const str = JSON.stringify(item);
+        return str.includes('Maison Nova') || str.includes('Kroma') || str.includes('cli-001') || str.includes('proj-001') || str.includes('task-001') || str.includes('inv-001');
+      };
+
       const savedClients = localStorage.getItem('ai_ugc_clients');
-      if (savedClients) setClients(JSON.parse(savedClients));
+      if (savedClients) {
+        const parsed = JSON.parse(savedClients);
+        setClients(Array.isArray(parsed) ? parsed.filter(c => !isMockItem(c)) : []);
+      }
 
       const savedProjects = localStorage.getItem('ai_ugc_projects');
-      if (savedProjects) setProjects(JSON.parse(savedProjects));
+      if (savedProjects) {
+        const parsed = JSON.parse(savedProjects);
+        setProjects(Array.isArray(parsed) ? parsed.filter(p => !isMockItem(p)) : []);
+      }
 
       const savedTasks = localStorage.getItem('ai_ugc_tasks');
-      if (savedTasks) setTasks(JSON.parse(savedTasks));
+      if (savedTasks) {
+        const parsed = JSON.parse(savedTasks);
+        setTasks(Array.isArray(parsed) ? parsed.filter(t => !isMockItem(t)) : []);
+      }
 
       const savedInvoices = localStorage.getItem('ai_ugc_invoices');
-      if (savedInvoices) setInvoices(JSON.parse(savedInvoices));
+      if (savedInvoices) {
+        const parsed = JSON.parse(savedInvoices);
+        setInvoices(Array.isArray(parsed) ? parsed.filter(i => !isMockItem(i)) : []);
+      }
 
       const savedPortfolio = localStorage.getItem('ai_ugc_portfolio');
       if (savedPortfolio) setPortfolioCases(JSON.parse(savedPortfolio));
@@ -161,21 +195,25 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         .then((res) => res.json())
         .then((data) => {
           if (data && data.success) {
-            if (Array.isArray(data.clients) && data.clients.length > 0) {
-              setClients(data.clients);
-              localStorage.setItem('ai_ugc_clients', JSON.stringify(data.clients));
+            if (Array.isArray(data.clients)) {
+              const clean = data.clients.filter((c: any) => !isMockItem(c));
+              setClients(clean);
+              localStorage.setItem('ai_ugc_clients', JSON.stringify(clean));
             }
-            if (Array.isArray(data.projects) && data.projects.length > 0) {
-              setProjects(data.projects);
-              localStorage.setItem('ai_ugc_projects', JSON.stringify(data.projects));
+            if (Array.isArray(data.projects)) {
+              const clean = data.projects.filter((p: any) => !isMockItem(p));
+              setProjects(clean);
+              localStorage.setItem('ai_ugc_projects', JSON.stringify(clean));
             }
-            if (Array.isArray(data.tasks) && data.tasks.length > 0) {
-              setTasks(data.tasks);
-              localStorage.setItem('ai_ugc_tasks', JSON.stringify(data.tasks));
+            if (Array.isArray(data.tasks)) {
+              const clean = data.tasks.filter((t: any) => !isMockItem(t));
+              setTasks(clean);
+              localStorage.setItem('ai_ugc_tasks', JSON.stringify(clean));
             }
-            if (Array.isArray(data.invoices) && data.invoices.length > 0) {
-              setInvoices(data.invoices);
-              localStorage.setItem('ai_ugc_invoices', JSON.stringify(data.invoices));
+            if (Array.isArray(data.invoices)) {
+              const clean = data.invoices.filter((i: any) => !isMockItem(i));
+              setInvoices(clean);
+              localStorage.setItem('ai_ugc_invoices', JSON.stringify(clean));
             }
           }
         })

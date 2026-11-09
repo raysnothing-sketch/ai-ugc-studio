@@ -111,61 +111,12 @@ export const VOICE_PROFILES: VoiceProfile[] = [
 
 export const INITIAL_CINEMATIC_PROJECT: CinematicVideoProject = {
   id: 'cine-custom-1',
-  title: 'Spot Publicitaire Cinématique',
-  description: 'Une ambiance cinématographique haut de gamme mettant en valeur les détails et l\'émotion du produit.',
-  productName: 'Votre Produit',
+  title: 'Nouveau Spot Cinématique',
+  description: '',
+  productName: '',
   visualStyle: 'Cinématique Haute Couture',
   targetDuration: '15-30 sec',
-  scenes: [
-    {
-      id: 'sc-c1',
-      sceneNumber: 1,
-      title: '1. Introduction',
-      shotType: 'Plan large • 3s',
-      durationSec: 3,
-      description: 'Accroche visuelle contemplative créant l\'attente et l\'atmosphère.',
-      cameraMovement: 'Travelling lent vers l\'avant.',
-      lighting: 'Golden hour douce avec lumière volumétrique.',
-      prompt: 'Cinematic wide establishing shot, minimalist luxury architecture, golden hour light, 8k film aesthetic, arri alexa',
-      imageUrl: 'https://images.unsplash.com/photo-1518495973542-4542c06a5843?w=600&auto=format&fit=crop&q=80'
-    },
-    {
-      id: 'sc-c2',
-      sceneNumber: 2,
-      title: '2. Produit',
-      shotType: 'Gros plan • 5s',
-      durationSec: 5,
-      description: 'Mise en valeur macro des détails, des textures et de la qualité du produit.',
-      cameraMovement: 'Macro tilt fluide à 60fps.',
-      lighting: 'Lumière studio douce avec reflets dorés épurés.',
-      prompt: 'Macro luxury product cinematography, ultra realistic 8k, marble surface, soft golden backlighting, cinema commercial',
-      imageUrl: 'https://images.unsplash.com/photo-1608248597359-33534d08ee7a?w=600&auto=format&fit=crop&q=80'
-    },
-    {
-      id: 'sc-c3',
-      sceneNumber: 3,
-      title: '3. Bénéfices',
-      shotType: 'Plan moyen • 5s',
-      durationSec: 5,
-      description: 'Scène d\'usage démontrant les sensations et l\'expérience utilisateur.',
-      cameraMovement: 'Arc rotatif subtil.',
-      lighting: 'Éclairage naturel immersif.',
-      prompt: 'Medium close-up of a person experiencing the premium product with satisfaction, 35mm film grain, aesthetic bokeh',
-      imageUrl: 'https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=600&auto=format&fit=crop&q=80'
-    },
-    {
-      id: 'sc-c4',
-      sceneNumber: 4,
-      title: '4. CTA & Hero Shot',
-      shotType: 'Plan final • 3s',
-      durationSec: 3,
-      description: 'Packshot héroïque final avec logo et appel à l\'action.',
-      cameraMovement: 'Plan fixe héroïque.',
-      lighting: 'Lumière zénithale épurée.',
-      prompt: 'Hero packshot of product on podium, subtle floating light particles, clean luxury branding space, 8k commercial finish',
-      imageUrl: 'https://images.unsplash.com/photo-1620916566398-39f1143ab7be?w=600&auto=format&fit=crop&q=80'
-    }
-  ],
+  scenes: [],
   status: 'concept',
   createdAt: new Date().toISOString().split('T')[0]
 };

@@ -47,8 +47,65 @@ export const CinematicStudioView: React.FC = () => {
     setIsGeneratingStoryboard(true);
     setTimeout(() => {
       setIsGeneratingStoryboard(false);
+      const generatedScenes: StoryboardScene[] = [
+        {
+          id: `sc-${Date.now()}-1`,
+          sceneNumber: 1,
+          title: '1. Accroche Visuelle',
+          shotType: 'Plan large • 3s',
+          durationSec: 3,
+          description: description || 'Ouverture contemplative créant l\'attente et l\'atmosphère.',
+          cameraMovement: 'Travelling lent vers l\'avant.',
+          lighting: 'Golden hour douce avec lumière volumétrique.',
+          prompt: `Cinematic wide establishing shot, ${visualStyle}, 8k film aesthetic, arri alexa`,
+          imageUrl: 'https://images.unsplash.com/photo-1518495973542-4542c06a5843?w=600&auto=format&fit=crop&q=80'
+        },
+        {
+          id: `sc-${Date.now()}-2`,
+          sceneNumber: 2,
+          title: '2. Focus Produit',
+          shotType: 'Gros plan • 5s',
+          durationSec: 5,
+          description: 'Mise en valeur macro des détails, des textures et du design.',
+          cameraMovement: 'Macro tilt fluide à 60fps.',
+          lighting: 'Lumière studio douce avec reflets dorés épurés.',
+          prompt: `Macro luxury product cinematography, ${visualStyle}, 8k, soft golden backlighting`,
+          imageUrl: 'https://images.unsplash.com/photo-1608248597359-33534d08ee7a?w=600&auto=format&fit=crop&q=80'
+        },
+        {
+          id: `sc-${Date.now()}-3`,
+          sceneNumber: 3,
+          title: '3. Mise en Situation',
+          shotType: 'Plan moyen • 5s',
+          durationSec: 5,
+          description: 'Expérience immersive et sensations d\'utilisation en situation réelle.',
+          cameraMovement: 'Arc rotatif subtil.',
+          lighting: 'Éclairage naturel immersif.',
+          prompt: `Medium close-up of luxury aesthetic commercial usage, 35mm film grain, bokeh`,
+          imageUrl: 'https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=600&auto=format&fit=crop&q=80'
+        },
+        {
+          id: `sc-${Date.now()}-4`,
+          sceneNumber: 4,
+          title: '4. Hero Shot & CTA',
+          shotType: 'Plan final • 3s',
+          durationSec: 3,
+          description: 'Packshot héroïque final avec identité de marque et appel à l\'action.',
+          cameraMovement: 'Plan fixe héroïque.',
+          lighting: 'Lumière zénithale épurée.',
+          prompt: `Hero packshot of product on podium, 8k commercial finish`,
+          imageUrl: 'https://images.unsplash.com/photo-1620916566398-39f1143ab7be?w=600&auto=format&fit=crop&q=80'
+        }
+      ];
+      updateCinematicProject({
+        ...cinematicProject,
+        description,
+        visualStyle,
+        targetDuration,
+        scenes: generatedScenes
+      });
       setActiveStep(2);
-    }, 1000);
+    }, 1200);
   };
 
   const stepsList = [
@@ -205,57 +262,69 @@ export const CinematicStudioView: React.FC = () => {
               </h2>
             </div>
             <span className="font-mono text-[11px] text-[#646a78] tabular-nums">
-              4 plans • 00:00:16:00 au total
+              {cinematicProject.scenes.length > 0
+                ? `${cinematicProject.scenes.length} plans • 00:00:${String(cinematicProject.scenes.reduce((acc, s) => acc + s.durationSec, 0)).padStart(2, '0')}:00 au total`
+                : 'En attente de brief'}
             </span>
           </div>
 
-          {/* 4 Cinematic Scene Cards Grid (16:9 Widescreen Aspect) */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {cinematicProject.scenes.map((scene, idx) => (
-              <div
-                key={scene.id}
-                onClick={() => setSelectedScene(scene)}
-                className="bg-[#0e1115] border border-[#1e232d] hover:border-[#384152] rounded-xl overflow-hidden group cursor-pointer transition-colors flex flex-col"
-              >
-                {/* 16:9 Cinematic Video Viewport */}
-                <div className="relative aspect-video bg-[#050608] overflow-hidden">
-                  <img
-                    src={scene.imageUrl}
-                    alt={scene.title}
-                    className="w-full h-full object-cover transition-opacity duration-200 group-hover:opacity-90"
-                  />
-                  
-                  {/* Subtle Camera HUD Elements (Signature) */}
-                  <div className="absolute top-2.5 left-2.5 px-2 py-0.5 rounded bg-black/70 border border-white/10 font-mono text-[10px] text-[#d4af37] tabular-nums">
-                    PLAN 0{idx + 1}
+          {cinematicProject.scenes.length === 0 ? (
+            <div className="py-12 px-6 rounded-xl bg-[#0e1115] border border-dashed border-[#1e232d] text-center space-y-2.5">
+              <Film className="w-8 h-8 text-[#656a76] mx-auto" />
+              <h3 className="text-xs font-medium text-[#f5f5f3]">Aucun storyboard actif pour le moment</h3>
+              <p className="text-[11px] text-[#8e94a0] max-w-sm mx-auto">
+                Renseignez votre description et vos optiques ci-contre, puis cliquez sur &quot;Générer le storyboard&quot; pour créer vos plans 16:9.
+              </p>
+            </div>
+          ) : (
+            /* 4 Cinematic Scene Cards Grid (16:9 Widescreen Aspect) */
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {cinematicProject.scenes.map((scene, idx) => (
+                <div
+                  key={scene.id}
+                  onClick={() => setSelectedScene(scene)}
+                  className="bg-[#0e1115] border border-[#1e232d] hover:border-[#384152] rounded-xl overflow-hidden group cursor-pointer transition-colors flex flex-col"
+                >
+                  {/* 16:9 Cinematic Video Viewport */}
+                  <div className="relative aspect-video bg-[#050608] overflow-hidden">
+                    <img
+                      src={scene.imageUrl}
+                      alt={scene.title}
+                      className="w-full h-full object-cover transition-opacity duration-200 group-hover:opacity-90"
+                    />
+                    
+                    {/* Subtle Camera HUD Elements (Signature) */}
+                    <div className="absolute top-2.5 left-2.5 px-2 py-0.5 rounded bg-black/70 border border-white/10 font-mono text-[10px] text-[#d4af37] tabular-nums">
+                      PLAN 0{idx + 1}
+                    </div>
+
+                    <div className="absolute top-2.5 right-2.5 px-2 py-0.5 rounded bg-black/70 border border-white/10 font-mono text-[10px] text-[#9ba1ad] tabular-nums">
+                      {`00:00:0${(idx + 1) * 4}:00`}
+                    </div>
+
+                    <div className="absolute bottom-2.5 right-2.5 p-1.5 rounded bg-black/70 border border-white/10 text-white/80 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <Maximize2 className="w-3 h-3" />
+                    </div>
                   </div>
 
-                  <div className="absolute top-2.5 right-2.5 px-2 py-0.5 rounded bg-black/70 border border-white/10 font-mono text-[10px] text-[#9ba1ad] tabular-nums">
-                    {`00:00:0${(idx + 1) * 4}:00`}
-                  </div>
-
-                  <div className="absolute bottom-2.5 right-2.5 p-1.5 rounded bg-black/70 border border-white/10 text-white/80 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <Maximize2 className="w-3 h-3" />
+                  {/* Technical Meta Footer */}
+                  <div className="p-3.5 flex items-center justify-between border-t border-[#181c24] bg-[#0c0e12]">
+                    <div>
+                      <h3 className="text-xs font-medium text-[#f5f5f3] group-hover:text-[#d4af37] transition-colors">
+                        {scene.title}
+                      </h3>
+                      <p className="text-[11px] text-[#646a78] mt-0.5">
+                        {scene.shotType}
+                      </p>
+                    </div>
+                    <span className="font-mono text-[10px] text-[#4d5464]">
+                      35mm • 2.39:1
+                    </span>
                   </div>
                 </div>
-
-                {/* Technical Meta Footer */}
-                <div className="p-3.5 flex items-center justify-between border-t border-[#181c24] bg-[#0c0e12]">
-                  <div>
-                    <h3 className="text-xs font-medium text-[#f5f5f3] group-hover:text-[#d4af37] transition-colors">
-                      {scene.title}
-                    </h3>
-                    <p className="text-[11px] text-[#646a78] mt-0.5">
-                      {scene.shotType}
-                    </p>
-                  </div>
-                  <span className="font-mono text-[10px] text-[#4d5464]">
-                    35mm • 2.39:1
-                  </span>
-                </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
 
           {/* Assembly & Timeline Ribbon */}
           <div className="bg-[#0e1115] border border-[#1e232d] rounded-xl p-4 flex flex-col sm:flex-row items-center justify-between gap-4">
