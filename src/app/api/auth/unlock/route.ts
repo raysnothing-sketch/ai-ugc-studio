@@ -36,13 +36,19 @@ export async function POST(req: NextRequest) {
 
     // 4. Generate Cryptographically Signed Token
     const sessionToken = StudioAuthService.createSignedSessionToken();
+    const sessionHours = parseInt(process.env.STUDIO_SESSION_HOURS || '24', 10);
+    const maxAgeSec = (isNaN(sessionHours) || sessionHours <= 0 ? 24 : sessionHours) * 3600;
 
-    const res = NextResponse.json({ success: true, message: 'Studio déverrouillé' });
+    const res = NextResponse.json({ 
+      success: true, 
+      message: 'Studio déverrouillé',
+      isWeakPasscode: StudioAuthService.isWeakPasscode()
+    });
     res.cookies.set(StudioAuthService.getCookieName(), sessionToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
-      maxAge: 60 * 60 * 24 * 30, // 30 days
+      maxAge: maxAgeSec,
       path: '/'
     });
 

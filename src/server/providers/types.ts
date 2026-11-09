@@ -3,6 +3,8 @@ export interface VoiceGenerateOptions {
   language?: string;
   speed?: number;
   pitch?: number;
+  model?: string;
+  stability?: number;
 }
 
 export interface VoiceGenerationResult {

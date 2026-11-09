@@ -1,30 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { r2Storage } from '@/server/storage/r2-client';
-import { verifyAuthOrReject } from '@/server/auth/studio-auth';
-
-const MAX_FILE_SIZE = 50 * 1024 * 1024; // 50 Megabytes
-
-const ALLOWED_MIME_TYPES = new Set([
-  // Images
-  'image/jpeg',
-  'image/png',
-  'image/webp',
-  'image/gif',
-  'image/svg+xml',
-  // Audio
-  'audio/mpeg',
-  'audio/mp3',
-  'audio/wav',
-  'audio/ogg',
-  'audio/m4a',
-  'audio/x-m4a',
-  // Video
-  'video/mp4',
-  'video/webm',
-  'video/quicktime',
-  // Documents
-  'application/pdf'
-]);
+import { StudioAuthService, verifyAuthOrReject } from '@/server/auth/studio-auth';
+import { validateUploadFile } from '@/server/utils/file-validator';
+import { db } from '@/server/db';
+import { mediaAssetsTable } from '@/server/db/schema';
+import crypto from 'crypto';
 
 export async function POST(req: NextRequest) {
   // 1. Enforce Authentication
@@ -32,45 +12,63 @@ export async function POST(req: NextRequest) {
   if (authErr) return authErr;
 
   try {
+    const clientIp = StudioAuthService.getClientIp(req);
     const formData = await req.formData();
     const file = formData.get('file') as File | null;
 
     if (!file) {
-      return NextResponse.json({ error: 'Fichier requis' }, { status: 400 });
+      return NextResponse.json({ success: false, error: 'Fichier requis' }, { status: 400 });
     }
 
-    // 2. Enforce File Size Limit
-    if (file.size > MAX_FILE_SIZE) {
-      return NextResponse.json({
-        error: `Fichier trop volumineux (${(file.size / 1024 / 1024).toFixed(1)} Mo). Limite autorisée : 50 Mo.`
-      }, { status: 400 });
-    }
-
-    // 3. Enforce Allowed MIME Types Whitelist
-    const mimeType = (file.type || '').toLowerCase();
-    if (!ALLOWED_MIME_TYPES.has(mimeType)) {
-      return NextResponse.json({
-        error: `Format de fichier non autorisé (${mimeType || 'inconnu'}). Formats acceptés : JPG, PNG, WEBP, MP3, WAV, MP4, WEBM, PDF.`
-      }, { status: 400 });
-    }
-
-    // 4. Sanitize Filename
     const buffer = Buffer.from(await file.arrayBuffer());
-    const sanitizedName = file.name
+    const declaredMime = (file.type || '').toLowerCase();
+
+    // 2. Validate Magic Bytes, Disguised Extensions, Rate Limits, and Size
+    const validation = validateUploadFile(buffer, file.name, declaredMime, clientIp);
+    if (!validation.valid) {
+      return NextResponse.json({
+        success: false,
+        error: validation.error || 'Fichier non valide.'
+      }, { status: 400 });
+    }
+
+    const verifiedMime = validation.detectedMime || declaredMime;
+
+    // 3. Sanitize Filename & generate unique key
+    const sanitizedBase = file.name
       .replace(/[^a-zA-Z0-9.-]/g, '_')
       .replace(/\.+/g, '.');
-    const key = `studio/uploads/${Date.now()}-${sanitizedName}`;
+    const assetId = crypto.randomUUID();
+    const key = `studio/uploads/${assetId}-${sanitizedBase}`;
 
-    // 5. Upload to Cloudflare R2
-    const result = await r2Storage.uploadFile(key, buffer, mimeType);
+    // 4. Upload to Cloudflare R2
+    const result = await r2Storage.uploadFile(key, buffer, verifiedMime);
+
+    // 5. Register in Database if available
+    try {
+      await db.insert(mediaAssetsTable).values({
+        id: assetId,
+        name: file.name,
+        type: verifiedMime.startsWith('image') ? 'image' : verifiedMime.startsWith('video') ? 'video' : verifiedMime.startsWith('audio') ? 'audio' : 'document',
+        url: result.url,
+        sizeBytes: file.size,
+        sizeFormatted: `${(file.size / (1024 * 1024)).toFixed(2)} Mo`,
+        mimeType: verifiedMime,
+        r2Key: result.key,
+        createdAt: new Date().toISOString()
+      });
+    } catch (dbErr: any) {
+      console.warn('[Upload] DB indexing warning:', dbErr.message);
+    }
 
     return NextResponse.json({
       success: true,
+      id: assetId,
       url: result.url,
       key: result.key,
       name: file.name,
       size: file.size,
-      mimeType
+      mimeType: verifiedMime
     });
   } catch (err: any) {
     return NextResponse.json({ success: false, error: err.message }, { status: 500 });

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { aiProviderManager } from '@/server/providers/ai-provider-manager';
 import { verifyAuthOrReject } from '@/server/auth/studio-auth';
+import { voiceGenerationSchema } from '@/server/validation/schemas';
 
 export const dynamic = 'force-dynamic';
 
@@ -10,16 +11,22 @@ export async function POST(req: NextRequest) {
   if (authErr) return authErr;
 
   try {
-    const body = await req.json();
-    const { text, voiceId = '21m00Tcm4TlvDq8ikWAM', language = 'fr' } = body;
+    const rawBody = await req.json();
 
-    if (!text || typeof text !== 'string') {
-      return NextResponse.json({ error: 'Texte requis pour la synthèse vocale' }, { status: 400 });
+    // 2. Validate with Zod
+    const parsed = voiceGenerationSchema.safeParse(rawBody);
+    if (!parsed.success) {
+      return NextResponse.json({
+        success: false,
+        error: parsed.error.issues.map(i => i.message).join(' | ')
+      }, { status: 400 });
     }
 
+    const { text, voiceId, language } = parsed.data;
+
     const result = await aiProviderManager.generateVoice(text, {
-      voiceId,
-      language
+      voiceId: voiceId || '21m00Tcm4TlvDq8ikWAM',
+      language: language || 'fr'
     });
 
     return NextResponse.json({
@@ -27,6 +34,9 @@ export async function POST(req: NextRequest) {
       ...result
     });
   } catch (error: any) {
-    return NextResponse.json({ error: error.message || 'Generation failed' }, { status: 500 });
+    return NextResponse.json({
+      success: false,
+      error: error.message || 'Generation failed'
+    }, { status: 500 });
   }
 }

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { aiProviderManager } from '@/server/providers/ai-provider-manager';
 import { verifyAuthOrReject } from '@/server/auth/studio-auth';
+import { videoGenerationSchema } from '@/server/validation/schemas';
 
 export const dynamic = 'force-dynamic';
 
@@ -10,26 +11,24 @@ export async function POST(req: NextRequest) {
   if (authErr) return authErr;
 
   try {
-    const body = await req.json();
-    const {
-      prompt = '',
-      script = '',
-      aspectRatio = '9:16',
-      durationSec = 15,
-      avatarId = 'anna-in-studio',
-      voiceId = '21m00Tcm4TlvDq8ikWAM'
-    } = body;
+    const rawBody = await req.json();
 
-    const effectivePrompt = script || prompt;
-    if (!effectivePrompt || typeof effectivePrompt !== 'string') {
-      return NextResponse.json({ error: 'Script ou prompt requis pour la vidéo' }, { status: 400 });
+    // 2. Validate with Zod
+    const parsed = videoGenerationSchema.safeParse(rawBody);
+    if (!parsed.success) {
+      return NextResponse.json({
+        success: false,
+        error: parsed.error.issues.map(i => i.message).join(' | ')
+      }, { status: 400 });
     }
 
-    const result = await aiProviderManager.generateVideo(effectivePrompt, {
+    const { prompt, aspectRatio, avatarId, voiceId } = parsed.data;
+
+    const result = await aiProviderManager.generateVideo(prompt, {
       aspectRatio,
-      durationSec,
-      avatarId,
-      voiceId
+      durationSec: 15,
+      avatarId: avatarId || 'anna-in-studio',
+      voiceId: voiceId || '21m00Tcm4TlvDq8ikWAM'
     });
 
     return NextResponse.json({
@@ -37,6 +36,9 @@ export async function POST(req: NextRequest) {
       ...result
     });
   } catch (error: any) {
-    return NextResponse.json({ error: error.message || 'Video generation failed' }, { status: 500 });
+    return NextResponse.json({
+      success: false,
+      error: error.message || 'Video generation failed'
+    }, { status: 500 });
   }
 }

@@ -3,6 +3,8 @@ import { db, ensureDatabaseTables } from '@/server/db';
 import { tasksTable } from '@/server/db/schema';
 import { eq } from 'drizzle-orm';
 import { verifyAuthOrReject } from '@/server/auth/studio-auth';
+import { taskInputSchema } from '@/server/validation/schemas';
+import crypto from 'crypto';
 
 export const dynamic = 'force-dynamic';
 
@@ -27,16 +29,17 @@ export async function POST(req: NextRequest) {
     await ensureDatabaseTables();
     const body = await req.json();
 
-    if (!body.title) {
-      return NextResponse.json({ error: 'Titre de la tâche requis' }, { status: 400 });
+    const title = (body.title || '').trim();
+    if (!title) {
+      return NextResponse.json({ success: false, error: 'Titre de la tâche requis' }, { status: 400 });
     }
 
     const newTask = {
-      id: body.id || `task-${Date.now()}`,
-      title: body.title.trim(),
+      id: body.id || `task-${crypto.randomUUID()}`,
+      title,
       projectId: body.projectId || null,
-      deadline: body.deadline || "Aujourd'hui",
-      status: body.status || 'todo',
+      deadline: body.deadline || body.dueDate || "Aujourd'hui",
+      status: body.status || (body.completed ? 'done' : 'todo'),
       priority: body.priority || 'medium',
       createdAt: body.createdAt || new Date().toISOString().split('T')[0]
     };
@@ -57,7 +60,7 @@ export async function PATCH(req: NextRequest) {
     const body = await req.json();
     const { id, status } = body;
 
-    if (!id) return NextResponse.json({ error: 'ID requis' }, { status: 400 });
+    if (!id) return NextResponse.json({ success: false, error: 'ID requis' }, { status: 400 });
 
     await db.update(tasksTable).set({ status }).where(eq(tasksTable.id, id));
     return NextResponse.json({ success: true, id, status });
@@ -75,7 +78,7 @@ export async function DELETE(req: NextRequest) {
     const { searchParams } = new URL(req.url);
     const id = searchParams.get('id');
 
-    if (!id) return NextResponse.json({ error: 'ID requis' }, { status: 400 });
+    if (!id) return NextResponse.json({ success: false, error: 'ID requis' }, { status: 400 });
 
     await db.delete(tasksTable).where(eq(tasksTable.id, id));
     return NextResponse.json({ success: true, id });

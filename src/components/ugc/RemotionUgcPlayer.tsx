@@ -34,7 +34,7 @@ export const RemotionUgcPlayer: React.FC<RemotionUgcPlayerProps> = ({
     <div className="w-full h-full relative flex items-center justify-center bg-black overflow-hidden select-none">
       <Player
         ref={playerRef}
-        component={UgcAdComposition}
+        component={UgcAdComposition as any}
         inputProps={{
           avatarUrl,
           scriptText,

@@ -85,6 +85,13 @@ interface AppContextType {
   clearAllStudioData: () => void;
 }
 
+function generateStudioId(prefix: string): string {
+  if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
+    return `${prefix}-${crypto.randomUUID()}`;
+  }
+  return `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
+}
+
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
 export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -110,18 +117,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [isProfileModalOpen, setIsProfileModalOpen] = useState<boolean>(false);
 
-  // Clean hydration from localStorage
+  // Clean hydration from localStorage without data loss
   useEffect(() => {
     try {
-      // Clear legacy sample keys if present to ensure clean slate
-      if (localStorage.getItem('ai_ugc_sample_data_cleared') !== 'true') {
-        localStorage.removeItem('ai_ugc_clients');
-        localStorage.removeItem('ai_ugc_projects');
-        localStorage.removeItem('ai_ugc_tasks');
-        localStorage.removeItem('ai_ugc_invoices');
-        localStorage.setItem('ai_ugc_sample_data_cleared', 'true');
-      }
-
       const savedLang = localStorage.getItem('ai_ugc_lang') as Language;
       if (savedLang) setLanguage(savedLang);
 
@@ -145,6 +143,18 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
       const savedDeliveries = localStorage.getItem('ai_ugc_deliveries');
       if (savedDeliveries) setDeliveryPackages(JSON.parse(savedDeliveries));
+
+      const savedScripts = localStorage.getItem('ai_ugc_scripts');
+      if (savedScripts) setScripts(JSON.parse(savedScripts));
+
+      const savedMarketing = localStorage.getItem('ai_ugc_marketing');
+      if (savedMarketing) setMarketingAnalyses(JSON.parse(savedMarketing));
+
+      const savedBrandKit = localStorage.getItem('ai_ugc_brand_kit');
+      if (savedBrandKit) setBrandKit(JSON.parse(savedBrandKit));
+
+      const savedJobs = localStorage.getItem('ai_ugc_video_jobs');
+      if (savedJobs) setVideoJobs(JSON.parse(savedJobs));
 
       // Asynchronous background sync with Turso / SQLite DB
       fetch('/api/studio/sync')
@@ -191,7 +201,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const addClient = (data: Omit<Client, 'id' | 'createdAt' | 'activeProjectsCount' | 'totalBilled'>) => {
     const newClient: Client = {
       ...data,
-      id: `cli-${Date.now()}`,
+      id: generateStudioId('cli'),
       activeProjectsCount: 0,
       totalBilled: 0,
       createdAt: new Date().toISOString().split('T')[0]
@@ -216,7 +226,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const addProject = (data: Omit<Project, 'id' | 'progress'>) => {
     const newProj: Project = {
       ...data,
-      id: `proj-${Date.now()}`,
+      id: generateStudioId('proj'),
       progress: 0
     };
     const updated = [newProj, ...projects];
@@ -233,6 +243,11 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     const updated = projects.map(p => p.id === id ? { ...p, status } : p);
     setProjects(updated);
     localStorage.setItem('ai_ugc_projects', JSON.stringify(updated));
+    fetch('/api/projects', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id, status })
+    }).catch(() => {});
   };
 
   const deleteProject = (id: string) => {
@@ -245,7 +260,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const addTask = (data: Omit<Task, 'id'>) => {
     const newTask: Task = {
       ...data,
-      id: `task-${Date.now()}`
+      id: generateStudioId('task')
     };
     const updated = [newTask, ...tasks];
     setTasks(updated);
@@ -286,29 +301,37 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   };
 
   const addMarketingAnalysis = (analysis: MarketingAnalysis) => {
-    setMarketingAnalyses([analysis, ...marketingAnalyses]);
+    const updated = [analysis, ...marketingAnalyses];
+    setMarketingAnalyses(updated);
+    localStorage.setItem('ai_ugc_marketing', JSON.stringify(updated));
   };
 
   const addScript = (script: UgcScript) => {
-    setScripts([script, ...scripts]);
+    const updated = [script, ...scripts];
+    setScripts(updated);
+    localStorage.setItem('ai_ugc_scripts', JSON.stringify(updated));
   };
 
   const updateScript = (id: string, newText: string) => {
-    setScripts(scripts.map(s => s.id === id ? { ...s, fullText: newText, wordCount: newText.trim().split(/\s+/).length } : s));
+    const updated = scripts.map(s => s.id === id ? { ...s, fullText: newText, wordCount: newText.trim().split(/\s+/).length } : s);
+    setScripts(updated);
+    localStorage.setItem('ai_ugc_scripts', JSON.stringify(updated));
   };
 
   const updateCinematicProject = (proj: CinematicVideoProject) => {
     setCinematicProject(proj);
+    localStorage.setItem('ai_ugc_cinematic', JSON.stringify(proj));
   };
 
   const updateBrandKit = (kit: BrandKit) => {
     setBrandKit(kit);
+    localStorage.setItem('ai_ugc_brand_kit', JSON.stringify(kit));
   };
 
   const addInvoice = (inv: Omit<Invoice, 'id'>) => {
     const newInv: Invoice = {
       ...inv,
-      id: `inv-${Date.now()}`
+      id: generateStudioId('inv')
     };
     const updated = [newInv, ...invoices];
     setInvoices(updated);
@@ -342,7 +365,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const addDeliveryPackage = (pkg: Omit<DeliveryPackage, 'id' | 'downloadCount'>) => {
     const newPkg: DeliveryPackage = {
       ...pkg,
-      id: `del-${Date.now()}`,
+      id: generateStudioId('del'),
       downloadCount: 0
     };
     const updated = [newPkg, ...deliveryPackages];
@@ -351,7 +374,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   };
 
   const addVideoJob = (job: UgcVideoJob) => {
-    setVideoJobs([job, ...videoJobs]);
+    const updated = [job, ...videoJobs];
+    setVideoJobs(updated);
+    localStorage.setItem('ai_ugc_video_jobs', JSON.stringify(updated));
   };
 
   const clearAllStudioData = () => {

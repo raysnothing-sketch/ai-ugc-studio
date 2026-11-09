@@ -37,6 +37,8 @@ export const ProductToAdWizardModal: React.FC = () => {
   const [substepIndex, setSubstepIndex] = useState(0);
   const [isCompleted, setIsCompleted] = useState(false);
   const [isPlayingPreview, setIsPlayingPreview] = useState(false);
+  const [orchestrationError, setOrchestrationError] = useState<string | null>(null);
+  const [finalResult, setFinalResult] = useState<any>(null);
 
   if (!isProductToAdModalOpen) return null;
 
@@ -80,41 +82,68 @@ export const ProductToAdWizardModal: React.FC = () => {
     'Vidéo prête pour diffusion !'
   ];
 
-  const handleStartAssembly = () => {
+  const handleStartAssembly = async () => {
     setIsAssembling(true);
+    setOrchestrationError(null);
     setSubstepIndex(0);
 
-    let current = 0;
-    const interval = setInterval(() => {
-      current++;
-      setSubstepIndex(current);
-      if (current >= assemblyPipelineSteps.length - 1) {
-        clearInterval(interval);
-        setTimeout(() => {
-          setIsAssembling(false);
-          setIsCompleted(true);
-          setStep(5);
+    let curStep = 0;
+    const progressTimer = setInterval(() => {
+      curStep = (curStep + 1) % (assemblyPipelineSteps.length - 2);
+      setSubstepIndex(curStep);
+    }, 700);
 
-          // Save completed video job into state
-          addVideoJob({
-            id: `p2a-${Date.now()}`,
-            title: `Product-to-Ad : ${currentProductName}`,
-            productName: currentProductName,
-            videoType: 'review',
-            format: videoFormat,
-            actorId: selectedActor.id,
-            actorName: selectedActor.name,
-            voiceName: selectedVoice.name,
-            scriptText: `${generatedScripts[selectedScriptIdx].hook} ${generatedScripts[selectedScriptIdx].body} ${generatedScripts[selectedScriptIdx].cta}`,
-            videoUrl: selectedActor.avatarUrl,
-            durationSec: 28,
-            status: 'completed',
-            estimatedCostEur: 1.45,
-            createdAt: new Date().toISOString()
-          });
-        }, 600);
+    try {
+      const response = await fetch('/api/product-to-ad/orchestrate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          productName: currentProductName,
+          productUrl: productUrl.trim() || undefined,
+          actorId: selectedActor.id,
+          voiceId: selectedVoice.id,
+          aspectRatio: videoFormat,
+          targetAudience: 'Acheteurs e-commerce / Réseaux sociaux',
+          scriptAngle: selectedScriptIdx === 1 ? 'unboxing_discovery' : selectedScriptIdx === 2 ? 'emotional_testimonial' : 'hook_problem_solution'
+        })
+      });
+
+      clearInterval(progressTimer);
+      setSubstepIndex(assemblyPipelineSteps.length - 1);
+
+      const resData = await response.json();
+      if (!response.ok || !resData.success) {
+        throw new Error(resData.error || 'Erreur lors de la génération publicitaire');
       }
-    }, 450);
+
+      const generated = resData.data;
+      setFinalResult(generated);
+
+      addVideoJob({
+        id: generated.jobId,
+        title: `Product-to-Ad : ${currentProductName}`,
+        productName: currentProductName,
+        videoType: 'review',
+        format: videoFormat,
+        actorId: selectedActor.id,
+        actorName: selectedActor.name,
+        voiceName: selectedVoice.name,
+        scriptText: generated.script?.fullText || `${generatedScripts[selectedScriptIdx].hook} ${generatedScripts[selectedScriptIdx].body} ${generatedScripts[selectedScriptIdx].cta}`,
+        videoUrl: generated.videoUrl || selectedActor.avatarUrl,
+        durationSec: generated.durationSec || 25,
+        status: 'completed',
+        estimatedCostEur: generated.estimatedCostEur || 0,
+        createdAt: new Date().toISOString()
+      });
+
+      setIsAssembling(false);
+      setIsCompleted(true);
+      setStep(5);
+    } catch (err: any) {
+      clearInterval(progressTimer);
+      setIsAssembling(false);
+      setOrchestrationError(err.message || 'Une erreur est survenue pendant la génération.');
+    }
   };
 
   const handleClose = () => {
@@ -362,6 +391,12 @@ export const ProductToAdWizardModal: React.FC = () => {
                   style={{ width: `${Math.round(((substepIndex + 1) / 14) * 100)}%` }}
                 />
               </div>
+
+              {orchestrationError && (
+                <div className="p-3 rounded-lg bg-rose-500/10 border border-rose-500/30 text-rose-400 text-xs">
+                  {orchestrationError}
+                </div>
+              )}
             </div>
           )}
 
@@ -376,23 +411,34 @@ export const ProductToAdWizardModal: React.FC = () => {
               <div className="flex flex-col sm:flex-row gap-6 items-center">
                 {/* 9:16 Video Mockup Container */}
                 <div className="w-48 aspect-[9/16] bg-black rounded-2xl overflow-hidden border-2 border-gold-500/40 relative shadow-2xl shrink-0">
-                  <img
-                    src={selectedActor.avatarUrl}
-                    alt="Preview"
-                    className="w-full h-full object-cover"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
-                  <div className="absolute bottom-8 left-2 right-2 text-center">
+                  {finalResult?.videoUrl && finalResult.videoUrl.endsWith('.mp4') ? (
+                    <video
+                      src={finalResult.videoUrl}
+                      controls={isPlayingPreview}
+                      autoPlay={isPlayingPreview}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <img
+                      src={selectedActor.avatarUrl}
+                      alt="Preview"
+                      className="w-full h-full object-cover"
+                    />
+                  )}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent pointer-events-none" />
+                  <div className="absolute bottom-8 left-2 right-2 text-center pointer-events-none">
                     <span className="inline-block bg-black/80 px-2 py-1 rounded text-[10px] font-bold text-white border border-gold-400/50">
                       {generatedScripts[selectedScriptIdx].cta}
                     </span>
                   </div>
-                  <button
-                    onClick={() => setIsPlayingPreview(!isPlayingPreview)}
-                    className="absolute inset-0 m-auto w-10 h-10 rounded-full bg-black/60 backdrop-blur-sm border border-gold-400 flex items-center justify-center text-white"
-                  >
-                    {isPlayingPreview ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
-                  </button>
+                  {(!finalResult?.videoUrl || !finalResult.videoUrl.endsWith('.mp4')) && (
+                    <button
+                      onClick={() => setIsPlayingPreview(!isPlayingPreview)}
+                      className="absolute inset-0 m-auto w-10 h-10 rounded-full bg-black/60 backdrop-blur-sm border border-gold-400 flex items-center justify-center text-white"
+                    >
+                      {isPlayingPreview ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
+                    </button>
+                  )}
                 </div>
 
                 {/* Details & Actions */}
@@ -402,7 +448,7 @@ export const ProductToAdWizardModal: React.FC = () => {
                       Campagne {currentProductName} — UGC Master
                     </h3>
                     <p className="text-[#8e94a0] mt-0.5">
-                      Résolution 1080x1920 • 28 secondes • Débit 12 Mbps
+                      Résolution 1080x1920 • 25 secondes • Codec H.264 Audio Dolby
                     </p>
                   </div>
 
@@ -410,15 +456,20 @@ export const ProductToAdWizardModal: React.FC = () => {
                     <p><strong className="text-[#f5f5f3]">Acteur :</strong> {selectedActor.name} ({selectedActor.style})</p>
                     <p><strong className="text-[#f5f5f3]">Voix :</strong> {selectedVoice.name}</p>
                     <p><strong className="text-[#f5f5f3]">Sous-titres :</strong> Intégrés et synchronisés</p>
+                    {finalResult?.audioUrl && (
+                      <p><strong className="text-[#f5f5f3]">Piste audio :</strong> <a href={finalResult.audioUrl} target="_blank" rel="noreferrer" className="text-gold-400 hover:underline">Écouter la voix neuronale HD</a></p>
+                    )}
                   </div>
 
                   <div className="flex flex-wrap gap-2 pt-2">
-                    <button
-                      onClick={() => alert('Téléchargement de la vidéo MP4 haute définition démarré.')}
+                    <a
+                      href={finalResult?.videoUrl || '#'}
+                      target="_blank"
+                      rel="noreferrer"
                       className="px-4 py-2 rounded-lg bg-gold-500 text-[#0c0d0f] font-bold text-xs hover:bg-gold-400 transition-colors flex items-center gap-1.5"
                     >
                       <Download className="w-3.5 h-3.5" /> Télécharger MP4
-                    </button>
+                    </a>
                     <button
                       onClick={handleClose}
                       className="px-4 py-2 rounded-lg bg-[#232730] text-[#f5f5f3] font-semibold text-xs hover:bg-[#2b303c] transition-colors"

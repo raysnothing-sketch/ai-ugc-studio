@@ -2,7 +2,10 @@ import type { Metadata } from 'next';
 import './globals.css';
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://ai-ugc-studio-liard.vercel.app'),
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_APP_URL ||
+    (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'https://ai-ugc-studio-liard.vercel.app')
+  ),
   title: 'AI UGC Studio — Personal Edition',
   description: 'Your all-in-one AI creative studio for marketing, content and business. Studio privé de production marketing et création vidéo UGC.',
   icons: {

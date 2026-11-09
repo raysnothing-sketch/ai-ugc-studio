@@ -183,6 +183,19 @@ export class AIProviderManager {
     return res;
   }
 
+  public async checkVideoStatus(jobId: string): Promise<VideoGenerationResult> {
+    const provider = this.videoProviders.get(this.activeVideoProvider) || this.videoProviders.get('HeyGen')!;
+    if (typeof (provider as any).checkJobStatus === 'function') {
+      return await (provider as any).checkJobStatus(jobId);
+    }
+    return {
+      jobId,
+      status: 'completed',
+      provider: 'HeyGen',
+      estimatedCostEur: 0
+    };
+  }
+
   public async syncLips(options: LipSyncOptions): Promise<LipSyncResult> {
     await this.checkBudgetOrThrow(0.10);
     const provider = this.lipSyncProviders.get(this.activeLipSyncProvider) || this.lipSyncProviders.get('MuseTalk-Serverless')!;

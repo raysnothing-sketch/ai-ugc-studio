@@ -39,4 +39,5 @@ cookies.txt
 next-env.d.ts
 
 # Temporary automation scripts
-scripts/
+scripts/*
+!scripts/test-suite.ts
