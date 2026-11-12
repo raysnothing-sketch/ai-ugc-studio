@@ -134,7 +134,7 @@ export interface VirtualActor {
   language: string[];
   tone: string;
   tag: string;
-  provider: 'HeyGen' | 'Synthesia' | 'Custom';
+  provider: 'HeyGen' | 'Synthesia' | 'Custom' | 'Studio-Free-Avatar';
 }
 
 export interface VoiceProfile {
@@ -143,7 +143,7 @@ export interface VoiceProfile {
   gender: string;
   accent: string;
   tone: string;
-  provider: 'ElevenLabs' | 'OpenAI' | 'PlayHT';
+  provider: 'ElevenLabs' | 'OpenAI' | 'PlayHT' | 'Studio-Free-Voice';
 }
 
 export interface UgcVideoJob {

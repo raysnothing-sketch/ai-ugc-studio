@@ -413,7 +413,7 @@ export const CinematicStudioView: React.FC = () => {
                 }}
                 className="px-4 py-2 text-xs font-medium rounded-lg bg-[#d4af37] text-[#07080a] hover:bg-[#e0bc45] transition-colors"
               >
-                Régénérer ce plan (Runway / Luma)
+                Régénérer ce plan (ComfyUI / Rushes Libres 0€)
               </button>
             </div>
           </div>

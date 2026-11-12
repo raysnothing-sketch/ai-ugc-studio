@@ -85,9 +85,9 @@ export const Header: React.FC<HeaderProps> = ({ onToggleMobileMenu, onOpenNewPro
         {/* Status indicator */}
         <div className="hidden sm:flex items-center gap-2 px-3 py-1 rounded-full bg-[#0e1014] border border-[#1e232d] text-[11px] text-[#8e94a0]">
           <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-          <span className="text-[#f5f5f3] font-medium">{t.header.systemOnline}</span>
+          <span className="text-[#f5f5f3] font-medium">Studio Autonome</span>
           <span className="text-[#3b4252]">|</span>
-          <span className="text-[#d4af37] font-medium font-mono">Engine & R2 Ready</span>
+          <span className="text-[#d4af37] font-medium font-mono">Mode 100% Gratuit (0€)</span>
         </div>
       </div>
 

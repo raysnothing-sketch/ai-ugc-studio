@@ -10,7 +10,7 @@ export interface VoiceGenerateOptions {
 export interface VoiceGenerationResult {
   audioUrl: string;
   durationSec: number;
-  provider: 'ElevenLabs' | 'OpenAI' | 'Kokoro';
+  provider: 'Studio-Free-Voice' | 'ElevenLabs' | 'OpenAI' | 'Kokoro';
   estimatedCostEur: number;
   r2Key?: string;
   isMock?: boolean;
@@ -30,7 +30,7 @@ export interface VideoGenerationResult {
   jobId: string;
   videoUrl?: string;
   status: 'pending' | 'processing' | 'completed' | 'failed';
-  provider: 'HeyGen' | 'Runway' | 'Luma' | 'Replicate';
+  provider: 'Studio-Free-Video' | 'ComfyUI-Local' | 'HeyGen' | 'Runway' | 'Luma' | 'Replicate';
   estimatedCostEur: number;
   r2Key?: string;
   isMock?: boolean;

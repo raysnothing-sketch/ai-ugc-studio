@@ -65,7 +65,7 @@ export const VIRTUAL_ACTORS: VirtualActor[] = [
     language: ['Français', 'Allemand', 'Anglais'],
     tone: 'Énergique, naturelle, convaincante',
     tag: 'Polyvalent UGC & Lifestyle',
-    provider: 'HeyGen'
+    provider: 'Studio-Free-Avatar'
   },
   {
     id: 'act-2',
@@ -76,7 +76,7 @@ export const VIRTUAL_ACTORS: VirtualActor[] = [
     language: ['Français', 'Anglais'],
     tone: 'Douce, experte, rassurante',
     tag: 'Cosmétiques, Beauté & Bien-être',
-    provider: 'HeyGen'
+    provider: 'Studio-Free-Avatar'
   },
   {
     id: 'act-3',
@@ -87,7 +87,7 @@ export const VIRTUAL_ACTORS: VirtualActor[] = [
     language: ['Allemand', 'Anglais', 'Français'],
     tone: 'Professionnel, moderne, précis',
     tag: 'SaaS, E-commerce & Produits',
-    provider: 'Synthesia'
+    provider: 'Studio-Free-Avatar'
   },
   {
     id: 'act-4',
@@ -98,15 +98,15 @@ export const VIRTUAL_ACTORS: VirtualActor[] = [
     language: ['Français', 'Allemand'],
     tone: 'Créative, expressive, branchée',
     tag: 'Mode, Accessoires & Réseaux',
-    provider: 'Custom'
+    provider: 'Studio-Free-Avatar'
   }
 ];
 
 export const VOICE_PROFILES: VoiceProfile[] = [
-  { id: 'v-1', name: 'Léa (FR) - Voix Naturelle & Dynamique', gender: 'Femme', accent: 'Français neutre', tone: 'Énergique & Spontanée', provider: 'ElevenLabs' },
-  { id: 'v-2', name: 'Klara (DE) - Moderne & Professionnelle', gender: 'Femme', accent: 'Allemand standard', tone: 'Claire & Confiante', provider: 'ElevenLabs' },
-  { id: 'v-3', name: 'Sarah (EN) - Commercial & Friendly', gender: 'Femme', accent: 'Américain dynamique', tone: 'Confiant & Percutant', provider: 'ElevenLabs' },
-  { id: 'v-4', name: 'Thomas (FR) - Posé & Rassurant', gender: 'Homme', accent: 'Français neutre', tone: 'Professionnel', provider: 'OpenAI' }
+  { id: 'v-1', name: 'Léa (FR) — Voix Studio Naturelle', gender: 'Femme', accent: 'Français neutre', tone: 'Énergique & Spontanée', provider: 'Studio-Free-Voice' },
+  { id: 'v-2', name: 'Thomas (FR) — Narration Posée & Pro', gender: 'Homme', accent: 'Français neutre', tone: 'Professionnel & Rassurant', provider: 'Studio-Free-Voice' },
+  { id: 'v-3', name: 'Klara (DE) — Moderne & Dynamique', gender: 'Femme', accent: 'Allemand standard', tone: 'Claire & Confiante', provider: 'Studio-Free-Voice' },
+  { id: 'v-4', name: 'Sarah (EN) — US Commercial Tone', gender: 'Femme', accent: 'Américain dynamique', tone: 'Confiant & Percutant', provider: 'Studio-Free-Voice' }
 ];
 
 export const INITIAL_CINEMATIC_PROJECT: CinematicVideoProject = {

@@ -2,36 +2,85 @@
 
 import React, { useState, useEffect } from 'react';
 import { useApp } from '@/lib/store';
-import { Settings, Key, Database, HardDrive, User, Check, ShieldCheck, DollarSign, Trash2 } from 'lucide-react';
+import {
+  User,
+  Check,
+  ShieldCheck,
+  Trash2,
+  Cpu,
+  Sparkles,
+  Zap,
+  Globe,
+  Radio,
+  CheckCircle2,
+  AlertCircle
+} from 'lucide-react';
 
 export const SettingsView: React.FC = () => {
   const { userProfile, updateUserProfile, clearAllStudioData } = useApp();
   const [saved, setSaved] = useState(false);
 
+  // Studio Operating Mode (Autonomous Free vs Cloud Paid)
+  const [studioMode, setStudioMode] = useState<'autonomous_free' | 'cloud_paid'>('autonomous_free');
+  const [isComfyChecking, setIsComfyChecking] = useState(false);
+  const [comfyStatus, setComfyStatus] = useState<'idle' | 'online' | 'offline'>('idle');
+  const [comfyUrl, setComfyUrl] = useState('http://127.0.0.1:8188');
+
   // Profile fields
   const [name, setName] = useState(userProfile.name);
   const [studioName, setStudioName] = useState(userProfile.studioName);
   const [title, setTitle] = useState(userProfile.title);
-  const [taxNumber, setTaxNumber] = useState(userProfile.taxNumber);
-  const [address, setAddress] = useState(userProfile.address);
+  const [taxNumber, setTaxNumber] = useState(userProfile.taxNumber || '');
+  const [address, setAddress] = useState(userProfile.address || '');
   const [currency, setCurrency] = useState(userProfile.currency || '€');
 
   useEffect(() => {
     setName(userProfile.name);
     setStudioName(userProfile.studioName);
     setTitle(userProfile.title);
-    setTaxNumber(userProfile.taxNumber);
-    setAddress(userProfile.address);
+    setTaxNumber(userProfile.taxNumber || '');
+    setAddress(userProfile.address || '');
     setCurrency(userProfile.currency || '€');
+
+    // Fetch active studio mode from server
+    fetch('/api/studio/mode')
+      .then((res) => res.json())
+      .then((data) => {
+        if (data && data.mode) {
+          setStudioMode(data.mode);
+        }
+      })
+      .catch(() => {});
   }, [userProfile]);
 
-  // API Configs
-  const [tursoUrl, setTursoUrl] = useState('libsql://ai-ugc-studio.turso.io');
-  const [r2Bucket, setR2Bucket] = useState('ai-ugc-studio-storage');
-  const [heygenKey, setHeygenKey] = useState('sk_heygen_live_****************');
-  const [elevenlabsKey, setElevenlabsKey] = useState('xi_eleven_prod_****************');
-  const [runwayKey, setRunwayKey] = useState('rw_gen3_live_****************');
-  const [openaiKey, setOpenaiKey] = useState('sk-proj-live-****************');
+  const handleModeSwitch = async (targetMode: 'autonomous_free' | 'cloud_paid') => {
+    setStudioMode(targetMode);
+    try {
+      await fetch('/api/studio/mode', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ mode: targetMode })
+      });
+      setSaved(true);
+      setTimeout(() => setSaved(false), 2000);
+    } catch {
+      // local toggle fallback
+    }
+  };
+
+  const handleTestComfyUI = async () => {
+    setIsComfyChecking(true);
+    try {
+      const res = await fetch(`${comfyUrl}/system_stats`, {
+        signal: AbortSignal.timeout(2000)
+      });
+      setComfyStatus(res.ok ? 'online' : 'offline');
+    } catch {
+      setComfyStatus('offline');
+    } finally {
+      setIsComfyChecking(false);
+    }
+  };
 
   const handleSave = (e: React.FormEvent) => {
     e.preventDefault();
@@ -48,29 +97,167 @@ export const SettingsView: React.FC = () => {
   };
 
   const handleReset = () => {
-    if (confirm('Êtes-vous sûr de vouloir réinitialiser toutes les données locales du studio ?')) {
+    if (confirm('Confirmez-vous la réinitialisation de toutes les données locales du Studio ?')) {
       clearAllStudioData();
-      alert('Toutes les données ont été réinitialisées.');
+      alert('Toutes les données ont été remises à zéro.');
     }
   };
 
   return (
     <div className="space-y-6 max-w-4xl">
       {/* Title */}
-      <div>
-        <h1 className="text-2xl font-bold text-[#f5f5f3] tracking-tight">Paramètres du Studio</h1>
-        <p className="text-xs text-[#8e94a0] mt-1">
-          Personnalisation de votre profil, devise, clés d&apos;API, base de données Turso et stockage Cloudflare R2.
-        </p>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-2 border-b border-[#1b1f27]">
+        <div>
+          <h1 className="text-xl font-semibold text-[#f5f5f3] tracking-tight">
+            Paramètres du Studio
+          </h1>
+          <p className="text-xs text-[#8e94a0] mt-0.5">
+            Architecture d&apos;exécution, profil créatif et moteurs de génération vidéo
+          </p>
+        </div>
+
+        <div className="flex items-center gap-2">
+          {saved && (
+            <span className="text-[11px] font-mono text-emerald-400 flex items-center gap-1">
+              <Check className="w-3.5 h-3.5" /> Enregistré
+            </span>
+          )}
+        </div>
       </div>
 
+      {/* 1. Master Mode Selector: 100% Autonome & Gratuit vs Cloud Payant */}
+      <section className="bg-[#0e1115] border border-[#1e232d] rounded-xl p-5 space-y-4">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Cpu className="w-4 h-4 text-[#d4af37]" />
+            <h2 className="text-xs font-semibold uppercase tracking-wider text-[#f5f5f3]">
+              Mode d&apos;Exécution & Coûts de Production
+            </h2>
+          </div>
+          <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-[#181d26] text-[#d4af37] border border-[#272e3d]">
+            Inspiré de Velorn & OpenMontage
+          </span>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {/* Card 1: Mode 100% Autonome & Gratuit */}
+          <div
+            onClick={() => handleModeSwitch('autonomous_free')}
+            className={`p-4 rounded-xl border transition-colors cursor-pointer flex flex-col justify-between ${
+              studioMode === 'autonomous_free'
+                ? 'bg-[#12161f] border-[#d4af37] shadow-[0_0_20px_rgba(212,175,55,0.08)]'
+                : 'bg-[#07080a] border-[#1e232d] hover:border-[#2f3746]'
+            }`}
+          >
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-semibold text-[#f5f5f3] flex items-center gap-1.5">
+                  <Zap className="w-3.5 h-3.5 text-[#d4af37]" />
+                  Mode 100% Autonome & Gratuit
+                </span>
+                {studioMode === 'autonomous_free' && (
+                  <span className="w-2 h-2 rounded-full bg-[#d4af37]" />
+                )}
+              </div>
+              <p className="text-[11px] text-[#8e94a0] leading-relaxed">
+                Supprime les abonnements payants. Les voix, vidéos et montages sont générés sans aucun débit bancaire via les moteurs locaux et bibliothèques ouvertes.
+              </p>
+            </div>
+
+            <div className="mt-4 pt-3 border-t border-[#1e232d] flex items-center justify-between text-[10px] font-mono">
+              <span className="text-emerald-400 font-semibold">0.00 € / mois garanti</span>
+              <span className="text-[#646a78]">Zéro clé requise</span>
+            </div>
+          </div>
+
+          {/* Card 2: Mode Cloud Payant */}
+          <div
+            onClick={() => handleModeSwitch('cloud_paid')}
+            className={`p-4 rounded-xl border transition-colors cursor-pointer flex flex-col justify-between ${
+              studioMode === 'cloud_paid'
+                ? 'bg-[#12161f] border-[#d4af37]'
+                : 'bg-[#07080a] border-[#1e232d] hover:border-[#2f3746]'
+            }`}
+          >
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-semibold text-[#f5f5f3] flex items-center gap-1.5">
+                  <Globe className="w-3.5 h-3.5 text-[#8e94a0]" />
+                  Mode Cloud Externe (Payant)
+                </span>
+                {studioMode === 'cloud_paid' && (
+                  <span className="w-2 h-2 rounded-full bg-[#d4af37]" />
+                )}
+              </div>
+              <p className="text-[11px] text-[#8e94a0] leading-relaxed">
+                Permet d&apos;utiliser vos propres comptes d&apos;API tierces payantes (Runway Gen-3, HeyGen, ElevenLabs) si vous préférez déléguer le calcul au cloud.
+              </p>
+            </div>
+
+            <div className="mt-4 pt-3 border-t border-[#1e232d] flex items-center justify-between text-[10px] font-mono">
+              <span className="text-[#8e94a0]">Facturation à l&apos;usage</span>
+              <span className="text-[#646a78]">Clés API nécessaires</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Velorn ComfyUI Local Bridge Settings */}
+        <div className="p-3.5 rounded-lg bg-[#07080a] border border-[#1e232d] space-y-2 text-xs">
+          <div className="flex items-center justify-between">
+            <span className="font-medium text-[#f5f5f3] flex items-center gap-1.5 text-[11px]">
+              <Radio className="w-3.5 h-3.5 text-[#d4af37]" />
+              Pont ComfyUI Local (Style Velorn)
+            </span>
+            <span className="text-[10px] font-mono text-[#646a78]">
+              Wan 2.1 / CogVideoX / Hunyuan
+            </span>
+          </div>
+
+          <div className="flex flex-col sm:flex-row items-center gap-2">
+            <input
+              type="text"
+              value={comfyUrl}
+              onChange={(e) => setComfyUrl(e.target.value)}
+              placeholder="http://127.0.0.1:8188"
+              className="flex-1 w-full p-2 bg-[#0e1115] border border-[#1e232d] rounded-lg text-[#f5f5f3] font-mono text-xs focus:outline-none focus:border-[#d4af37]"
+            />
+            <button
+              type="button"
+              onClick={handleTestComfyUI}
+              disabled={isComfyChecking}
+              className="w-full sm:w-auto px-3 py-2 rounded-lg bg-[#14181f] text-[#d4af37] border border-[#d4af37]/30 hover:border-[#d4af37] text-xs font-medium transition-colors shrink-0 cursor-pointer"
+            >
+              {isComfyChecking ? 'Vérification...' : 'Tester la connexion'}
+            </button>
+          </div>
+
+          <div className="flex items-center gap-2 pt-0.5 text-[11px] font-mono">
+            {comfyStatus === 'online' && (
+              <span className="text-emerald-400 flex items-center gap-1">
+                <CheckCircle2 className="w-3 h-3" /> Instance ComfyUI détectée en ligne (Rendu GPU local prêt)
+              </span>
+            )}
+            {comfyStatus === 'offline' && (
+              <span className="text-[#8e94a0] flex items-center gap-1">
+                <AlertCircle className="w-3 h-3 text-[#d4af37]" /> Instance ComfyUI non détectée. Repli automatique sur les rushes haute définition libres (OpenMontage Engine).
+              </span>
+            )}
+            {comfyStatus === 'idle' && (
+              <span className="text-[#646a78]">
+                Détecte automatiquement si ComfyUI tourne sur votre machine pour les rendus vidéo sans coût.
+              </span>
+            )}
+          </div>
+        </div>
+      </section>
+
+      {/* 2. User Profile Form */}
       <form onSubmit={handleSave} className="space-y-6">
-        {/* Profile Card */}
-        <div className="bg-[#14161a] border border-[#232730] rounded-xl p-5 shadow-card space-y-4">
-          <h3 className="text-xs font-semibold uppercase tracking-wider text-gold-400 flex items-center gap-2">
-            <User className="w-4 h-4" />
-            Profil & Identité de votre Studio
-          </h3>
+        <div className="bg-[#0e1115] border border-[#1e232d] rounded-xl p-5 space-y-4">
+          <h2 className="text-xs font-semibold uppercase tracking-wider text-[#f5f5f3] flex items-center gap-2">
+            <User className="w-4 h-4 text-[#d4af37]" />
+            Profil & Identité du Studio
+          </h2>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
             <div>
@@ -79,7 +266,7 @@ export const SettingsView: React.FC = () => {
                 type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                className="w-full p-2.5 bg-[#0c0d0f] border border-[#232730] rounded-lg text-[#f5f5f3] font-semibold"
+                className="w-full p-2.5 bg-[#07080a] border border-[#1e232d] rounded-lg text-[#f5f5f3] font-medium focus:outline-none focus:border-[#d4af37]"
                 required
               />
             </div>
@@ -89,7 +276,7 @@ export const SettingsView: React.FC = () => {
                 type="text"
                 value={studioName}
                 onChange={(e) => setStudioName(e.target.value)}
-                className="w-full p-2.5 bg-[#0c0d0f] border border-[#232730] rounded-lg text-[#f5f5f3] font-semibold"
+                className="w-full p-2.5 bg-[#07080a] border border-[#1e232d] rounded-lg text-[#f5f5f3] font-medium focus:outline-none focus:border-[#d4af37]"
                 required
               />
             </div>
@@ -99,15 +286,15 @@ export const SettingsView: React.FC = () => {
                 type="text"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                className="w-full p-2.5 bg-[#0c0d0f] border border-[#232730] rounded-lg text-[#f5f5f3]"
+                className="w-full p-2.5 bg-[#07080a] border border-[#1e232d] rounded-lg text-[#f5f5f3] focus:outline-none focus:border-[#d4af37]"
               />
             </div>
             <div>
-              <label className="text-[#8e94a0] block mb-1">Devise</label>
+              <label className="text-[#8e94a0] block mb-1">Devise Principale</label>
               <select
                 value={currency}
                 onChange={(e) => setCurrency(e.target.value)}
-                className="w-full p-2.5 bg-[#0c0d0f] border border-[#232730] rounded-lg text-[#f5f5f3]"
+                className="w-full p-2.5 bg-[#07080a] border border-[#1e232d] rounded-lg text-[#f5f5f3] focus:outline-none focus:border-[#d4af37]"
               >
                 <option value="€">EUR (€)</option>
                 <option value="$">USD ($)</option>
@@ -116,198 +303,57 @@ export const SettingsView: React.FC = () => {
               </select>
             </div>
             <div>
-              <label className="text-[#8e94a0] block mb-1">Numéro Fiscal / TVA / Siret</label>
+              <label className="text-[#8e94a0] block mb-1">Identifiant Fiscal / SIRET (Optionnel)</label>
               <input
                 type="text"
                 value={taxNumber}
                 onChange={(e) => setTaxNumber(e.target.value)}
-                className="w-full p-2.5 bg-[#0c0d0f] border border-[#232730] rounded-lg text-[#f5f5f3] font-mono"
+                placeholder="Ex: FR 84 928 310 442"
+                className="w-full p-2.5 bg-[#07080a] border border-[#1e232d] rounded-lg text-[#f5f5f3] font-mono text-xs focus:outline-none focus:border-[#d4af37]"
               />
             </div>
             <div>
-              <label className="text-[#8e94a0] block mb-1">Adresse de facturation</label>
+              <label className="text-[#8e94a0] block mb-1">Adresse de Facturation (Optionnel)</label>
               <input
                 type="text"
                 value={address}
                 onChange={(e) => setAddress(e.target.value)}
-                className="w-full p-2.5 bg-[#0c0d0f] border border-[#232730] rounded-lg text-[#f5f5f3]"
+                placeholder="Studio Privé, France / International"
+                className="w-full p-2.5 bg-[#07080a] border border-[#1e232d] rounded-lg text-[#f5f5f3] focus:outline-none focus:border-[#d4af37]"
               />
             </div>
           </div>
-        </div>
 
-        {/* Database & Cloudflare R2 */}
-        <div className="bg-[#14161a] border border-[#232730] rounded-xl p-5 shadow-card space-y-4">
-          <h3 className="text-xs font-semibold uppercase tracking-wider text-gold-400 flex items-center gap-2">
-            <Database className="w-4 h-4" />
-            Infrastructure : Base de données Turso & Cloudflare R2
-          </h3>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
-            <div>
-              <label className="text-[#8e94a0] block mb-1">URL Base de données Turso</label>
-              <input
-                type="text"
-                value={tursoUrl}
-                onChange={(e) => setTursoUrl(e.target.value)}
-                className="w-full p-2.5 bg-[#0c0d0f] border border-[#232730] rounded-lg text-[#f5f5f3] font-mono text-[11px]"
-              />
-            </div>
-            <div>
-              <label className="text-[#8e94a0] block mb-1">Bucket Cloudflare R2</label>
-              <input
-                type="text"
-                value={r2Bucket}
-                onChange={(e) => setR2Bucket(e.target.value)}
-                className="w-full p-2.5 bg-[#0c0d0f] border border-[#232730] rounded-lg text-[#f5f5f3] font-mono text-[11px]"
-              />
-            </div>
-          </div>
-        </div>
-
-        {/* AI Providers Keys */}
-        <div className="bg-[#14161a] border border-[#232730] rounded-xl p-5 shadow-card space-y-4">
-          <div className="flex items-center justify-between">
-            <h3 className="text-xs font-semibold uppercase tracking-wider text-gold-400 flex items-center gap-2">
-              <Key className="w-4 h-4" />
-              Fournisseurs IA Connectés
-            </h3>
-            <span className="text-[11px] text-emerald-400 flex items-center gap-1 font-medium">
-              <ShieldCheck className="w-3.5 h-3.5" /> Chiffrement côté serveur
-            </span>
-          </div>
-
-          <div className="space-y-3 text-xs">
-            <div>
-              <label className="text-[#8e94a0] block mb-1">HeyGen API (Génération Vidéo Avatars & Lip-Sync)</label>
-              <input
-                type="password"
-                value={heygenKey}
-                onChange={(e) => setHeygenKey(e.target.value)}
-                className="w-full p-2.5 bg-[#0c0d0f] border border-[#232730] rounded-lg text-[#f5f5f3] font-mono"
-              />
-            </div>
-
-            <div>
-              <label className="text-[#8e94a0] block mb-1">ElevenLabs API (Voix Synthétiques Multilingues DE/FR/EN)</label>
-              <input
-                type="password"
-                value={elevenlabsKey}
-                onChange={(e) => setElevenlabsKey(e.target.value)}
-                className="w-full p-2.5 bg-[#0c0d0f] border border-[#232730] rounded-lg text-[#f5f5f3] font-mono"
-              />
-            </div>
-
-            <div>
-              <label className="text-[#8e94a0] block mb-1">Runway Gen-3 / Luma Dream Machine (Cinematic Studio)</label>
-              <input
-                type="password"
-                value={runwayKey}
-                onChange={(e) => setRunwayKey(e.target.value)}
-                className="w-full p-2.5 bg-[#0c0d0f] border border-[#232730] rounded-lg text-[#f5f5f3] font-mono"
-              />
-            </div>
-
-            <div>
-              <label className="text-[#8e94a0] block mb-1">OpenAI / Anthropic (Marketing Intelligence & Scripts)</label>
-              <input
-                type="password"
-                value={openaiKey}
-                onChange={(e) => setOpenaiKey(e.target.value)}
-                className="w-full p-2.5 bg-[#0c0d0f] border border-[#232730] rounded-lg text-[#f5f5f3] font-mono"
-              />
-            </div>
-          </div>
-        </div>
-
-        {/* Anti-Debit Financial Shield Card */}
-        <div className="bg-[#14161a] border border-[#d4af37]/40 rounded-xl p-5 shadow-gold space-y-4">
-          <div className="flex items-center justify-between">
-            <h3 className="text-xs font-semibold uppercase tracking-wider text-gold-400 flex items-center gap-2">
-              <ShieldCheck className="w-4 h-4 text-gold-400" />
-              Bouclier de Sécurité Budgétaire & Anti-Prélèvement
-            </h3>
-            <span className="px-2 py-0.5 rounded bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 text-[10px] font-semibold">
-              Protection Active
-            </span>
-          </div>
-
-          <p className="text-xs text-[#8e94a0] leading-relaxed">
-            Ce disjoncteur logiciel empêche toute plateforme externe de débiter de l&apos;argent au-delà de la limite que vous fixez.
-          </p>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
-            <div className="p-3 bg-[#0c0d0f] border border-[#232730] rounded-lg space-y-1.5">
-              <label className="text-[#f5f5f3] font-semibold block">
-                Plafond Mensuel Strict (Hard Limit)
-              </label>
-              <div className="flex items-center gap-2">
-                <input
-                  type="number"
-                  defaultValue={25}
-                  min={0}
-                  max={500}
-                  className="w-24 p-2 bg-[#14161a] border border-[#232730] rounded text-gold-400 font-bold font-mono text-center text-sm"
-                />
-                <span className="text-[#8e94a0]">€ / mois max</span>
-              </div>
-              <span className="text-[10px] text-[#656a76] block">
-                Dès que ce montant est atteint, l&apos;application coupe immédiatement tout appel payant.
-              </span>
-            </div>
-
-            <div className="p-3 bg-[#0c0d0f] border border-[#232730] rounded-lg space-y-1.5">
-              <label className="text-[#f5f5f3] font-semibold block">
-                Mode &apos;Simulation Sans Frais&apos; (0 €)
-              </label>
-              <div className="flex items-center gap-2 pt-1">
-                <span className="px-2.5 py-1 rounded bg-gold-500/20 text-gold-400 border border-gold-500/30 font-bold text-[11px]">
-                  Mode Sécurisé
-                </span>
-                <span className="text-[11px] text-[#8e94a0]">
-                  Génère des aperçus photoréalistes sans solliciter vos cartes bancaires.
-                </span>
-              </div>
-            </div>
-          </div>
-
-          <div className="p-3 rounded-lg bg-[#191c22] border border-[#2b2f3a] text-[11px] text-[#8e94a0] space-y-1">
-            <p className="font-semibold text-[#f5f5f3] flex items-center gap-1.5">
-              🛡️ Règles d&apos;or pour empêcher les plateformes de débiter votre compte :
-            </p>
-            <ul className="list-disc list-inside space-y-0.5 text-[#8e94a0]">
-              <li><strong>Cartes virtuelles à plafond bloqué :</strong> Utilisez une carte virtuelle (Revolut, Lydia, Wise ou Qonto) plafonnée à 20 € max. Toute tentative de débit supérieur est rejetée à la source par la banque.</li>
-              <li><strong>Désactiver l&apos;auto-recharge (Auto-refill) :</strong> Sur OpenAI, ElevenLabs et HeyGen, désactivez toujours l&apos;option de réapprovisionnement automatique pour payer uniquement au solde prépayé.</li>
-            </ul>
-          </div>
-        </div>
-
-        {/* Save & Reset Bar */}
-        <div className="flex items-center justify-between pt-2">
-          <button
-            type="button"
-            onClick={handleReset}
-            className="text-xs text-rose-400 hover:text-rose-300 flex items-center gap-1.5 transition-colors"
-          >
-            <Trash2 className="w-3.5 h-3.5" />
-            <span>Réinitialiser les données locales</span>
-          </button>
-
-          <div className="flex items-center gap-3">
-            {saved && (
-              <span className="text-xs text-emerald-400 font-medium flex items-center gap-1">
-                <Check className="w-4 h-4" /> Enregistré !
-              </span>
-            )}
+          <div className="pt-2 flex justify-end">
             <button
               type="submit"
-              className="px-6 py-2.5 text-xs font-semibold rounded-lg bg-gradient-to-r from-[#d4af37] to-[#b89528] text-[#0c0d0f] hover:from-[#e5c05d] transition-all shadow-[0_0_15px_rgba(212,175,55,0.25)]"
+              className="px-4 py-2 rounded-lg bg-[#d4af37] text-[#07080a] text-xs font-semibold hover:bg-[#e0be48] active:bg-[#b89528] transition-colors cursor-pointer"
             >
-              Enregistrer les modifications
+              Enregistrer le profil
             </button>
           </div>
         </div>
       </form>
+
+      {/* 3. Maintenance & Studio Reset */}
+      <section className="bg-[#0e1115] border border-[#1e232d] rounded-xl p-5 space-y-3">
+        <div className="flex items-center gap-2">
+          <Trash2 className="w-4 h-4 text-rose-400" />
+          <h2 className="text-xs font-semibold uppercase tracking-wider text-[#f5f5f3]">
+            Zone de Réinitialisation
+          </h2>
+        </div>
+        <p className="text-xs text-[#8e94a0] leading-relaxed">
+          Supprime l&apos;ensemble des données locales (projets, clients, factures et fichiers temporaires) enregistrées sur votre navigateur.
+        </p>
+        <button
+          type="button"
+          onClick={handleReset}
+          className="px-3 py-1.5 rounded-lg bg-[#14181f] text-rose-400 hover:bg-rose-500/10 border border-rose-500/20 text-xs font-medium transition-colors cursor-pointer"
+        >
+          Remettre à zéro toutes les données du studio
+        </button>
+      </section>
     </div>
   );
 };

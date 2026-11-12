@@ -116,8 +116,10 @@ export const OverviewView: React.FC<OverviewViewProps> = ({ onOpenNewProject }) 
         </div>
 
         <div className="flex items-center gap-2 self-start sm:self-auto text-[11px] font-mono text-[#8e94a0] bg-[#0e1116] border border-[#1e232d] px-3 py-1.5 rounded-lg">
-          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-          <span>Moteurs IA & Storage R2 opérationnels</span>
+          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+          <span className="text-[#f5f5f3]">Mode 100% Autonome & Gratuit</span>
+          <span className="text-[#656a76]">•</span>
+          <span className="text-emerald-400">0.00 € coût d&apos;API</span>
         </div>
       </div>
 

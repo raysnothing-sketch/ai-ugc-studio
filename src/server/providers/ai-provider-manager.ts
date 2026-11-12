@@ -18,6 +18,10 @@ import { MuseTalkCloudProvider } from './lipsync/musetalk-cloud-provider';
 import { ComfyUIRestClient } from './image/comfyui-rest-client';
 import { db, ensureDatabaseTables } from '@/server/db';
 import { providerUsageTable, generationJobsTable } from '@/server/db/schema';
+import { FreeAutonomousVoiceProvider } from './voice/free-autonomous-voice-provider';
+import { FreeAutonomousVideoProvider } from './video/free-autonomous-video-provider';
+
+export type StudioOperatingMode = 'autonomous_free' | 'cloud_paid';
 
 export class AIProviderManager {
   private static instance: AIProviderManager;
@@ -27,14 +31,21 @@ export class AIProviderManager {
   public lipSyncProviders: Map<string, ILipSyncProvider> = new Map();
   public imageProviders: Map<string, IImageProvider> = new Map();
 
-  private activeVoiceProvider = 'ElevenLabs';
-  private activeVideoProvider = 'HeyGen';
+  // Mode 100% Autonome & Gratuit by default (0.00 €)
+  private studioMode: StudioOperatingMode = 'autonomous_free';
+  private activeVoiceProvider = 'Studio-Free-Voice';
+  private activeVideoProvider = 'Studio-Free-Video';
   private activeLipSyncProvider = 'MuseTalk-Serverless';
 
-  private monthlyBudgetLimitEur = parseFloat(process.env.MAX_MONTHLY_AI_BUDGET || '25.0');
-  private isSafeSimulationOnly = process.env.AI_SIMULATION_ONLY === 'true';
+  private monthlyBudgetLimitEur = 0.0;
+  private isSafeSimulationOnly = true;
 
   private constructor() {
+    // 100% Free & Autonomous Providers (Velorn / OpenMontage style)
+    this.voiceProviders.set('Studio-Free-Voice', new FreeAutonomousVoiceProvider());
+    this.videoProviders.set('Studio-Free-Video', new FreeAutonomousVideoProvider());
+
+    // Optional Cloud Providers (only active if user switches to cloud_paid mode)
     this.voiceProviders.set('ElevenLabs', new ElevenLabsVoiceProvider());
     this.voiceProviders.set('OpenAI', new OpenAIVoiceProvider());
 
@@ -51,6 +62,25 @@ export class AIProviderManager {
       AIProviderManager.instance = new AIProviderManager();
     }
     return AIProviderManager.instance;
+  }
+
+  public getStudioMode(): StudioOperatingMode {
+    return this.studioMode;
+  }
+
+  public setStudioMode(mode: StudioOperatingMode) {
+    this.studioMode = mode;
+    if (mode === 'autonomous_free') {
+      this.activeVoiceProvider = 'Studio-Free-Voice';
+      this.activeVideoProvider = 'Studio-Free-Video';
+      this.monthlyBudgetLimitEur = 0.0;
+      this.isSafeSimulationOnly = true;
+    } else {
+      this.activeVoiceProvider = 'ElevenLabs';
+      this.activeVideoProvider = 'HeyGen';
+      this.monthlyBudgetLimitEur = 25.0;
+      this.isSafeSimulationOnly = false;
+    }
   }
 
   /**
@@ -77,6 +107,11 @@ export class AIProviderManager {
    * Validates budget before executing external paid API calls
    */
   private async checkBudgetOrThrow(estimatedAddition: number): Promise<void> {
+    // Mode 100% Autonome & Gratuit generates media locally or via open engines without billing
+    if (this.studioMode === 'autonomous_free') {
+      return;
+    }
+
     if (this.isSafeSimulationOnly) {
       throw new Error("Bouclier Anti-Débit Actif : Le mode 'Simulation Sans Frais' est activé. Aucun appel payant n'est débité.");
     }
