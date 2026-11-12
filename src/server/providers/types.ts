@@ -59,8 +59,10 @@ export interface ImageGenerateOptions {
 
 export interface ImageGenerationResult {
   imageUrl: string;
-  provider: 'OpenAI-DALL-E' | 'ComfyUI-External' | 'Stability';
+  provider: 'OpenAI-DALL-E' | 'ComfyUI-External' | 'Stability' | 'Studio-Free-Image' | 'ComfyUI-Local';
   estimatedCostEur: number;
+  prompt?: string;
+  notice?: string;
 }
 
 export interface IVoiceProvider {

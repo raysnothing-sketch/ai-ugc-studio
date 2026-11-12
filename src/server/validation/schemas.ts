@@ -70,6 +70,12 @@ export const videoGenerationSchema = z.object({
   provider: z.string().max(50).optional().default('heygen')
 });
 
+export const imageGenerationSchema = z.object({
+  prompt: z.string().trim().min(3, 'Le prompt image est requis (min 3 caractères).').max(2000),
+  aspectRatio: z.enum(['1:1', '9:16', '16:9']).optional().default('16:9'),
+  style: z.string().max(200).optional()
+});
+
 export const productToAdSchema = z.object({
   productName: z.string().trim().min(2, 'Le nom du produit est requis.').max(150),
   productUrl: z.string().trim().url('URL produit invalide.').or(z.literal('')).optional().default(''),

@@ -7,6 +7,8 @@ import {
   VoiceGenerationResult,
   VideoGenerateOptions,
   VideoGenerationResult,
+  ImageGenerateOptions,
+  ImageGenerationResult,
   LipSyncOptions,
   LipSyncResult
 } from './types';
@@ -20,6 +22,7 @@ import { db, ensureDatabaseTables } from '@/server/db';
 import { providerUsageTable, generationJobsTable } from '@/server/db/schema';
 import { FreeAutonomousVoiceProvider } from './voice/free-autonomous-voice-provider';
 import { FreeAutonomousVideoProvider } from './video/free-autonomous-video-provider';
+import { FreeAutonomousImageProvider } from './image/free-autonomous-image-provider';
 
 export type StudioOperatingMode = 'autonomous_free' | 'cloud_paid';
 
@@ -35,6 +38,7 @@ export class AIProviderManager {
   private studioMode: StudioOperatingMode = 'autonomous_free';
   private activeVoiceProvider = 'Studio-Free-Voice';
   private activeVideoProvider = 'Studio-Free-Video';
+  private activeImageProvider = 'Studio-Free-Image';
   private activeLipSyncProvider = 'MuseTalk-Serverless';
 
   private monthlyBudgetLimitEur = 0.0;
@@ -44,6 +48,7 @@ export class AIProviderManager {
     // 100% Free & Autonomous Providers (Velorn / OpenMontage style)
     this.voiceProviders.set('Studio-Free-Voice', new FreeAutonomousVoiceProvider());
     this.videoProviders.set('Studio-Free-Video', new FreeAutonomousVideoProvider());
+    this.imageProviders.set('Studio-Free-Image', new FreeAutonomousImageProvider());
 
     // Optional Cloud Providers (only active if user switches to cloud_paid mode)
     this.voiceProviders.set('ElevenLabs', new ElevenLabsVoiceProvider());
@@ -73,11 +78,13 @@ export class AIProviderManager {
     if (mode === 'autonomous_free') {
       this.activeVoiceProvider = 'Studio-Free-Voice';
       this.activeVideoProvider = 'Studio-Free-Video';
+      this.activeImageProvider = 'Studio-Free-Image';
       this.monthlyBudgetLimitEur = 0.0;
       this.isSafeSimulationOnly = true;
     } else {
       this.activeVoiceProvider = 'ElevenLabs';
       this.activeVideoProvider = 'HeyGen';
+      this.activeImageProvider = 'ComfyUI';
       this.monthlyBudgetLimitEur = 25.0;
       this.isSafeSimulationOnly = false;
     }
@@ -209,6 +216,32 @@ export class AIProviderManager {
           unitType: 'credits',
           costEur: res.estimatedCostEur,
           recordedAt: new Date().toISOString()
+        });
+      } catch (err) {
+        console.warn('[AIProviderManager] Usage recording notice:', err);
+      }
+    }
+
+    return res;
+  }
+
+  public async generateImage(prompt: string, options: ImageGenerateOptions): Promise<ImageGenerationResult> {
+    await this.checkBudgetOrThrow(0.04);
+
+    const provider = this.imageProviders.get(this.activeImageProvider) || this.imageProviders.get('Studio-Free-Image')!;
+    const res = await provider.generateImage(prompt, options);
+
+    if (res.estimatedCostEur > 0) {
+      try {
+        await db.insert(generationJobsTable).values({
+          id: `img-${Date.now()}`,
+          provider: res.provider,
+          type: 'image',
+          status: 'completed',
+          prompt: prompt.slice(0, 500),
+          outputUrl: res.imageUrl || null,
+          costEur: res.estimatedCostEur,
+          createdAt: new Date().toISOString()
         });
       } catch (err) {
         console.warn('[AIProviderManager] Usage recording notice:', err);

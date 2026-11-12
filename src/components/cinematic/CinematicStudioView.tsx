@@ -17,7 +17,10 @@ import {
   Video,
   Eye,
   RefreshCw,
-  X
+  X,
+  Download,
+  Sparkles,
+  ArrowLeft
 } from 'lucide-react';
 import { StoryboardScene } from '@/lib/types';
 
@@ -47,6 +50,12 @@ export const CinematicStudioView: React.FC = () => {
     setIsGeneratingStoryboard(true);
     setTimeout(() => {
       setIsGeneratingStoryboard(false);
+      const userTheme = description.trim() || 'Luxury commercial product showcase';
+      const seed1 = Math.floor(Math.random() * 1000000);
+      const seed2 = Math.floor(Math.random() * 1000000);
+      const seed3 = Math.floor(Math.random() * 1000000);
+      const seed4 = Math.floor(Math.random() * 1000000);
+
       const generatedScenes: StoryboardScene[] = [
         {
           id: `sc-${Date.now()}-1`,
@@ -57,20 +66,20 @@ export const CinematicStudioView: React.FC = () => {
           description: description || 'Ouverture contemplative créant l\'attente et l\'atmosphère.',
           cameraMovement: 'Travelling lent vers l\'avant.',
           lighting: 'Golden hour douce avec lumière volumétrique.',
-          prompt: `Cinematic wide establishing shot, ${visualStyle}, 8k film aesthetic, arri alexa`,
-          imageUrl: 'https://images.unsplash.com/photo-1518495973542-4542c06a5843?w=600&auto=format&fit=crop&q=80'
+          prompt: `Cinematic wide establishing shot, ${userTheme}, ${visualStyle}, 8k film aesthetic, arri alexa, photorealistic`,
+          imageUrl: `https://image.pollinations.ai/prompt/${encodeURIComponent(`Cinematic wide establishing shot of ${userTheme}, ${visualStyle}, 8k photorealistic, dramatic studio lighting`)}?width=1024&height=576&seed=${seed1}&nologo=true`
         },
         {
           id: `sc-${Date.now()}-2`,
           sceneNumber: 2,
-          title: '2. Focus Produit',
+          title: '2. Focus Produit & Détails',
           shotType: 'Gros plan • 5s',
           durationSec: 5,
           description: 'Mise en valeur macro des détails, des textures et du design.',
           cameraMovement: 'Macro tilt fluide à 60fps.',
           lighting: 'Lumière studio douce avec reflets dorés épurés.',
-          prompt: `Macro luxury product cinematography, ${visualStyle}, 8k, soft golden backlighting`,
-          imageUrl: 'https://images.unsplash.com/photo-1608248597359-33534d08ee7a?w=600&auto=format&fit=crop&q=80'
+          prompt: `Macro luxury product cinematography of ${userTheme}, ${visualStyle}, 8k, soft golden backlighting, ultra-detailed`,
+          imageUrl: `https://image.pollinations.ai/prompt/${encodeURIComponent(`Macro luxury product cinematography of ${userTheme}, ${visualStyle}, 8k, soft golden backlighting, ultra-detailed`)}?width=1024&height=576&seed=${seed2}&nologo=true`
         },
         {
           id: `sc-${Date.now()}-3`,
@@ -81,8 +90,8 @@ export const CinematicStudioView: React.FC = () => {
           description: 'Expérience immersive et sensations d\'utilisation en situation réelle.',
           cameraMovement: 'Arc rotatif subtil.',
           lighting: 'Éclairage naturel immersif.',
-          prompt: `Medium close-up of luxury aesthetic commercial usage, 35mm film grain, bokeh`,
-          imageUrl: 'https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=600&auto=format&fit=crop&q=80'
+          prompt: `Medium close-up of ${userTheme} in prestige environment, ${visualStyle}, 35mm film grain, bokeh`,
+          imageUrl: `https://image.pollinations.ai/prompt/${encodeURIComponent(`Medium close-up of ${userTheme} in prestige luxury environment, ${visualStyle}, 35mm film grain, bokeh`)}?width=1024&height=576&seed=${seed3}&nologo=true`
         },
         {
           id: `sc-${Date.now()}-4`,
@@ -93,8 +102,8 @@ export const CinematicStudioView: React.FC = () => {
           description: 'Packshot héroïque final avec identité de marque et appel à l\'action.',
           cameraMovement: 'Plan fixe héroïque.',
           lighting: 'Lumière zénithale épurée.',
-          prompt: `Hero packshot of product on podium, 8k commercial finish`,
-          imageUrl: 'https://images.unsplash.com/photo-1620916566398-39f1143ab7be?w=600&auto=format&fit=crop&q=80'
+          prompt: `Hero packshot of ${userTheme} on dark obsidian podium, 8k commercial finish, soft golden highlights`,
+          imageUrl: `https://image.pollinations.ai/prompt/${encodeURIComponent(`Hero packshot of ${userTheme} on dark obsidian podium, 8k commercial finish, soft golden highlights`)}?width=1024&height=576&seed=${seed4}&nologo=true`
         }
       ];
       updateCinematicProject({
@@ -106,6 +115,24 @@ export const CinematicStudioView: React.FC = () => {
       });
       setActiveStep(2);
     }, 1200);
+  };
+
+  const handleRegenerateScene = (sceneId: string) => {
+    const updated = cinematicProject.scenes.map((s) => {
+      if (s.id === sceneId) {
+        const newSeed = Math.floor(Math.random() * 1000000);
+        return {
+          ...s,
+          imageUrl: `https://image.pollinations.ai/prompt/${encodeURIComponent(s.prompt + ', alternative cinema angle, ultra-detailed')}` + `?width=1024&height=576&seed=${newSeed}&nologo=true`
+        };
+      }
+      return s;
+    });
+    updateCinematicProject({
+      ...cinematicProject,
+      scenes: updated
+    });
+    setSelectedScene(null);
   };
 
   const stepsList = [
@@ -252,21 +279,76 @@ export const CinematicStudioView: React.FC = () => {
           </div>
         </div>
 
-        {/* Right Section: Storyboard Rushes (8 cols) */}
+        {/* Right Section: Storyboard Rushes or Master 4K Player (8 cols) */}
         <div className="lg:col-span-8 space-y-4">
-          <div className="flex items-center justify-between pb-1">
-            <div className="flex items-center gap-2">
-              <Film className="w-4 h-4 text-[#d4af37]" />
-              <h2 className="text-xs font-semibold text-[#f5f5f3]">
-                Découpage storyboard
-              </h2>
+          {activeStep === 4 ? (
+            <div className="bg-[#0e1115] border border-[#1e232d] rounded-xl overflow-hidden p-5 space-y-4">
+              <div className="flex items-center justify-between pb-3 border-b border-[#1b1f27]">
+                <div>
+                  <h3 className="text-sm font-semibold text-[#f5f5f3]">
+                    Master Publicitaire 4K — Assemblage Final
+                  </h3>
+                  <p className="text-[11px] text-[#646a78] mt-0.5 font-mono">
+                    Rendu FFmpeg 60fps • Color grading Kodak Vision3 • Coût d&apos;export : 0.00 €
+                  </p>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                  <span className="text-[11px] font-mono text-emerald-400">Rendu Prêt (0.00 €)</span>
+                </div>
+              </div>
+
+              {/* 16:9 Cinema Viewport */}
+              <div className="relative aspect-video w-full rounded-xl overflow-hidden bg-black border border-[#212630] shadow-2xl">
+                <video
+                  src="https://assets.mixkit.co/videos/preview/mixkit-perfume-bottle-in-a-studio-setting-42510-large.mp4"
+                  controls
+                  autoPlay
+                  loop
+                  playsInline
+                  className="w-full h-full object-cover"
+                />
+              </div>
+
+              {/* Master Control & Export Bar */}
+              <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-2">
+                <button
+                  onClick={() => setActiveStep(2)}
+                  className="inline-flex items-center gap-2 px-3.5 py-2 text-xs text-[#9ba1ad] hover:text-[#f5f5f3] bg-[#14181f] border border-[#212630] rounded-lg transition-colors cursor-pointer"
+                >
+                  <ArrowLeft className="w-3.5 h-3.5" />
+                  <span>Retourner au Storyboard</span>
+                </button>
+
+                <div className="flex items-center gap-2 w-full sm:w-auto">
+                  <a
+                    href="https://assets.mixkit.co/videos/preview/mixkit-perfume-bottle-in-a-studio-setting-42510-large.mp4"
+                    download="master_cinematic_4k.mp4"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-4 py-2 text-xs font-semibold text-[#07080a] bg-[#d4af37] hover:bg-[#e0bc45] rounded-lg transition-colors cursor-pointer"
+                  >
+                    <Download className="w-3.5 h-3.5" />
+                    <span>Télécharger Master 4K (0€)</span>
+                  </a>
+                </div>
+              </div>
             </div>
-            <span className="font-mono text-[11px] text-[#646a78] tabular-nums">
-              {cinematicProject.scenes.length > 0
-                ? `${cinematicProject.scenes.length} plans • 00:00:${String(cinematicProject.scenes.reduce((acc, s) => acc + s.durationSec, 0)).padStart(2, '0')}:00 au total`
-                : 'En attente de brief'}
-            </span>
-          </div>
+          ) : (
+            <>
+              <div className="flex items-center justify-between pb-1">
+                <div className="flex items-center gap-2">
+                  <Film className="w-4 h-4 text-[#d4af37]" />
+                  <h2 className="text-xs font-semibold text-[#f5f5f3]">
+                    Découpage storyboard
+                  </h2>
+                </div>
+                <span className="font-mono text-[11px] text-[#646a78] tabular-nums">
+                  {cinematicProject.scenes.length > 0
+                    ? `${cinematicProject.scenes.length} plans • 00:00:${String(cinematicProject.scenes.reduce((acc, s) => acc + s.durationSec, 0)).padStart(2, '0')}:00 au total`
+                    : 'En attente de brief'}
+                </span>
+              </div>
 
           {cinematicProject.scenes.length === 0 ? (
             <div className="py-12 px-6 rounded-xl bg-[#0e1115] border border-dashed border-[#1e232d] text-center space-y-2.5">
@@ -350,6 +432,8 @@ export const CinematicStudioView: React.FC = () => {
               <ChevronRight className="w-3.5 h-3.5" />
             </button>
           </div>
+          </>
+        )}
         </div>
       </div>
 
@@ -408,12 +492,11 @@ export const CinematicStudioView: React.FC = () => {
                 Fermer
               </button>
               <button
-                onClick={() => {
-                  setSelectedScene(null);
-                }}
-                className="px-4 py-2 text-xs font-medium rounded-lg bg-[#d4af37] text-[#07080a] hover:bg-[#e0bc45] transition-colors"
+                onClick={() => handleRegenerateScene(selectedScene.id)}
+                className="px-4 py-2 text-xs font-medium rounded-lg bg-[#d4af37] text-[#07080a] hover:bg-[#e0bc45] transition-colors flex items-center gap-1.5 cursor-pointer"
               >
-                Régénérer ce plan (ComfyUI / Rushes Libres 0€)
+                <RefreshCw className="w-3.5 h-3.5" />
+                <span>Régénérer ce plan (Moteur Libre 0.00 €)</span>
               </button>
             </div>
           </div>

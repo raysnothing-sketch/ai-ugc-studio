@@ -56,17 +56,17 @@ export class FreeAutonomousVideoProvider implements IVideoProvider {
     }
 
     // 2. OpenMontage-style Zero-Key Curated Media Engine
-    // High-resolution video assets for each creative domain
+    // High-resolution reliable video assets (universal open media CDNs, zero hotlink blocks)
     const curatedVerticalFootage = [
-      'https://assets.mixkit.co/videos/preview/mixkit-girl-in-neon-sign-1232-large.mp4',
-      'https://assets.mixkit.co/videos/preview/mixkit-woman-applying-facial-cream-in-front-of-a-mirror-40092-large.mp4',
-      'https://assets.mixkit.co/videos/preview/mixkit-hands-holding-a-smartwatch-with-an-illuminated-screen-41584-large.mp4'
+      'https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4',
+      'https://test-videos.co.uk/vids/bigbuckbunny/mp4/h264/720/Big_Buck_Bunny_720_10s_1MB.mp4',
+      'https://media.w3.org/2010/05/sintel/trailer.mp4'
     ];
 
     const curatedWidescreenFootage = [
-      'https://assets.mixkit.co/videos/preview/mixkit-perfume-bottle-in-a-studio-setting-42510-large.mp4',
-      'https://assets.mixkit.co/videos/preview/mixkit-close-up-of-a-luxury-wristwatch-with-golden-details-42508-large.mp4',
-      'https://assets.mixkit.co/videos/preview/mixkit-modern-headphones-isolated-on-a-black-background-42511-large.mp4'
+      'https://media.w3.org/2010/05/sintel/trailer.mp4',
+      'https://vjs.zencdn.net/v/oceans.mp4',
+      'https://test-videos.co.uk/vids/bigbuckbunny/mp4/h264/720/Big_Buck_Bunny_720_10s_1MB.mp4'
     ];
 
     const selectedList = isVertical ? curatedVerticalFootage : curatedWidescreenFootage;
