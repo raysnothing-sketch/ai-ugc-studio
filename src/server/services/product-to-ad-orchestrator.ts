@@ -114,7 +114,7 @@ export class ProductToAdOrchestrator {
     } catch (err: any) {
       console.warn('[Product-to-Ad] Video generation notice:', err.message);
       // High-quality video sample for preview rather than a static image
-      videoUrl = 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4';
+      videoUrl = 'https://media.w3.org/2010/05/sintel/trailer.mp4';
       recordStep('Génération Vidéo (Mode Découverte)', 'Flux vidéo de prévisualisation HD synchronisé');
     }
 

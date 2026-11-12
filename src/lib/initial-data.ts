@@ -31,13 +31,49 @@ export const DEFAULT_USER_PROFILE: UserProfile = {
 // Clean states: No fake/fictional clients or invoices pre-filled!
 export const INITIAL_CLIENTS: Client[] = [];
 
-export const INITIAL_PROJECTS: Project[] = [];
+export const INITIAL_PROJECTS: Project[] = [
+  {
+    id: 'proj-ai-ugc-studio-official',
+    clientId: 'client-internal-studio',
+    clientName: 'Production Interne Studio',
+    name: 'Campagne Publicitaire Officielle — AI UGC Studio (0€ API)',
+    description: 'Campagne publicitaire haute conversion présentant l\'architecture autonome et gratuite du studio.',
+    objectives: 'Acquisition payante TikTok, Reels & Shorts sans coût d\'API.',
+    estimatedBudget: 0,
+    startDate: '2026-11-12',
+    deadline: '2026-12-31',
+    status: 'completed',
+    progress: 100,
+    deliverables: [
+      '1x Master Vidéo Publicitaire 9:16',
+      '1x Packshot Hero 16:9',
+      'Sous-titres dynamiques Remotion'
+    ],
+    thumbnailUrl: 'https://images.unsplash.com/photo-1542744094-3a31f272c490?w=600&auto=format&fit=crop&q=80',
+    tags: ['AI UGC Studio', 'Campagne Officielle', 'Autonome 0€']
+  }
+];
 
 export const INITIAL_TASKS: Task[] = [];
 
 export const INITIAL_MARKETING_ANALYSIS: MarketingAnalysis | null = null;
 
 export const INITIAL_SCRIPTS: UgcScript[] = [
+  {
+    id: 'sc-ai-ugc-studio-official',
+    title: 'Spot Publicitaire Officiel — AI UGC Studio (0€ API)',
+    type: 'review',
+    hook: "Vous payez encore des centaines d'euros en abonnements IA chaque mois ? Arrêtez tout de suite.",
+    problem: "Entre HeyGen, Runway et ElevenLabs, les crédits partent à une vitesse folle et vous êtes limités à chaque rendu.",
+    productIntro: "Voici AI UGC Studio : le premier studio de création publicitaire 100% autonome et gratuit.",
+    demoOrArgument: "Tout est réuni : acteurs virtuels ultra-réalistes, sous-titres karaoké Remotion animés et storyboards 4K... directement sur votre machine sans débourser un centime en API.",
+    proofOrBenefit: "Plafond budgétaire verrouillé à 0.00 €, passerelle ComfyUI locale prête à l'emploi et rendu instantané.",
+    cta: "Activez votre studio autonome dès aujourd'hui à 0€ et boostez vos conversions sans frais d'API !",
+    fullText: "Vous payez encore des centaines d'euros en abonnements IA chaque mois ? Arrêtez tout de suite. Entre HeyGen, Runway et ElevenLabs, les crédits partent à toute vitesse. Voici AI UGC Studio : le premier studio publicitaire 100% autonome et gratuit. Acteurs virtuels, sous-titres karaoké Remotion et storyboards 4K à zéro frais d'API. Activez votre studio dès aujourd'hui à 0€ et boostez vos conversions !",
+    tone: 'Énergique & Haute Conversion',
+    wordCount: 68,
+    estimatedDurationSec: 28
+  },
   {
     id: 'sc-template-1',
     title: 'Script Vendeur UGC — Format Problème / Solution',
